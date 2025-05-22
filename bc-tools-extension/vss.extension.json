@@ -1,0 +1,49 @@
+{
+  "manifestVersion": 1,
+  "id": "bc-extension-tasks",
+  "name": "Business Central Build Tasks",
+  "version": "0.1.0",
+  "publisher": "Evergrowth",
+  "targets": [
+    {
+      "id": "Microsoft.VisualStudio.Services"
+    }
+  ],
+  "description": "Build & Dependency tasks for Microsoft Dynamics 365 Business Central extensions.",
+  "categories": ["Build and release"],
+  "files": [
+    { "path": "Get-VSIXCompiler" },
+    { "path": "Get-BCDependencies" },
+    { "path": "Build-ALPackage" }
+  ],
+  "contributions": [
+    {
+      "id": "Get-VSIXCompilerTask",
+      "type": "ms.vss-distributed-task.task",
+      "targets": ["ms.vss-distributed-task.tasks"],
+      "properties": { "name": "Get-VSIXCompiler" }
+    },
+    {
+      "id": "Get-BCDependenciesTask",
+      "type": "ms.vss-distributed-task.task",
+      "targets": ["ms.vss-distributed-task.tasks"],
+      "properties": { "name": "Get-BCDependencies" }
+    },
+    {
+      "id": "EGBuildALPackageTask",
+      "type": "ms.vss-distributed-task.task",
+      "targets": ["ms.vss-distributed-task.tasks"],
+      "properties": { "name": "Build-ALPackage" }
+    },
+    {
+        "path": ".",                       
+        "exclude": [
+            "**/Tests/**",
+            "**/*.Tests.ps1",
+            "**/__tests__/**",
+            "**/*.Test.*",
+            "README.tests.md"
+        ]
+    }    
+  ]
+}

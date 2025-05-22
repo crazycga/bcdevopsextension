@@ -1,0 +1,30 @@
+{
+  "id": "c8d27640-a774-4ed5-a2bd-b2a6d22963e7",
+  "name": "EGGetALCompiler",
+  "friendlyName": "Get AL Compiler",
+  "description": "Gets the AL compiler (latest version) and expands it on the agent.",
+  "helpMarkDown": "Contact the author for help",
+  "category": "Build",
+  "author": "Evergrowth Consulting",
+  "version": {
+    "Major": 0,
+    "Minor": 1,
+    "Patch": 0
+  },
+  "instanceNameFormat": "Acquire compiler for AL project",
+  "inputs": [
+    {
+        "name": "DownloadDirectory",
+        "type": "string",
+        "label": "Download Directory",
+        "defaultValue": "$(Build.ArtifactStagingDirectory)",
+        "required": true,
+        "helpMarkDown": "The download folder of the compiler.  Default: $(Build.ArtifactStagingDirectory)"
+    }    
+  ],
+  "execution": {
+    "PowerShell3": {
+      "target": "wrapper_Get-VSIXCompiler.ps1"
+    }
+  }
+}

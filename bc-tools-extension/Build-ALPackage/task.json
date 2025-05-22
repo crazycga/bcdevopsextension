@@ -1,0 +1,62 @@
+{
+  "id": "dbb3137f-6afc-4afc-ac5c-507602c2b063",
+  "name": "EGBuildALPackage",
+  "friendlyName": "Build AL Package",
+  "description": "Runs the BC compile script and produces an .app file.",
+  "helpMarkDown": "Contact the author for help",
+  "category": "Build",
+  "author": "Evergrowth Consulting",
+  "version": {
+    "Major": 0,
+    "Minor": 1,
+    "Patch": 0
+  },
+  "instanceNameFormat": "Build AL Package from $(ProjectPath)",
+  "inputs": [
+    {
+        "name": "EntireAppName",
+        "type": "string",
+        "label": "Full File Name",
+        "defaultValue": "",
+        "required": true,
+        "helpMarkDown": "The name of the app file (without .app), i.e. TestApp.1.1.1 produces TestApp.1.1.1.app"
+    },
+    {
+      "name": "ProjectPath",
+      "type": "string",
+      "label": "Project Path",
+      "defaultValue": "$(Build.SourcesDirectory)",
+      "required": true,
+      "helpMarkDown": "Path to the AL project folder. Default $(Build.SourcesDirectory)"
+    },
+    {
+      "name": "OutAppFolder",
+      "type": "string",
+      "label": "Output App Folder",
+      "defaultValue": "$(Build.ArtifactStagingDirectory)",
+      "required": false,
+      "helpMarkDown": "Path for the compiled .app file.  Default $(Build.ArtifactStagingDirectory)"
+    },
+    {
+      "name": "PackageCachePath",
+      "type": "string",
+      "label": "Package Cache Path",
+      "defaultValue": "$(Build.SourcesDirectory)\\.alpackages",
+      "required": false,
+      "helpMarkDown": "Package cache path to use during compilation.  Default $(Build.SourcesDirectory)\\.alpackages"
+    },
+    {
+      "name": "ALEXEPathFolder",
+      "type": "string",
+      "label": "AL.EXE Path",
+      "defaultValue": "",
+      "required": true,
+      "helpMarkDown": "Path to the ALC.EXE folder, one folder above.  (The next folder down is 'win32'.)"
+    }
+  ],
+  "execution": {
+    "PowerShell3": {
+      "target": "wrapper_Build-ALPackage.ps1"
+    }
+  }
+}
