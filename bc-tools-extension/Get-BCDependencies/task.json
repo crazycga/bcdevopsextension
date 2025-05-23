@@ -3,13 +3,13 @@
   "name": "EGGetALDependencies",
   "friendlyName": "Get AL Dependencies",
   "description": "Gets the AL packages enumerated from the app.json and optionally the default dependencies.",
-  "helpMarkDown": "Contact the author for help",
+  "helpMarkDown": "Please open a GitHub issue at https://github.com/crazycga/bcdevopsextension/issues for queries or support.",
   "category": "Build",
   "author": "Evergrowth Consulting",
   "version": {
     "Major": 0,
     "Minor": 1,
-    "Patch": 13
+    "Patch": 0
   },
   "instanceNameFormat": "Collect dependencies for AL project",
   "inputs": [

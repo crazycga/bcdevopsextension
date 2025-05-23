@@ -3,13 +3,13 @@
   "name": "EGGetALCompiler",
   "friendlyName": "Get AL Compiler",
   "description": "Gets the AL compiler (latest version) and expands it on the agent.",
-  "helpMarkDown": "Contact the author for help",
+  "helpMarkDown": "Please open a GitHub issue at https://github.com/crazycga/bcdevopsextension/issues for queries or support.",
   "category": "Build",
   "author": "Evergrowth Consulting",
   "version": {
     "Major": 0,
     "Minor": 1,
-    "Patch": 13
+    "Patch": 0
   },
   "instanceNameFormat": "Acquire compiler for AL project",
   "inputs": [
