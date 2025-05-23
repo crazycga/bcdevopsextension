@@ -1,19 +1,66 @@
 {
 	"manifestVersion": 1,
-	"id": "BCBuildTasks",
+	"id": "eg-bc-build-tasks",
 	"name": "Business Central Build Tasks",
 	"version": "0.1.0",
 	"publisher": "Evergrowth",
+	"overview": "overview.md",
 	"targets": [
 		{
 			"id": "Microsoft.VisualStudio.Services"
 		}
 	],
-	"description": "Build & Dependency tasks for Microsoft Dynamics 365 Business Central extensions.",
-	"categories": [
+	"tags": [
+		"build",
+		"extension",
+		"al",
+		"business central"
+	],
+	"description": "Build and dependency collection tasks for Microsoft Dynamics 365 Business Central extensions.  This product allows for pipeline building of AL projects.",
+	"icons": {
+		"default": "icons/128x128.png",
+		"small": "icons/32x32.png",
+		"large": "icons/512x512.png"
+	},
+		"categories": [
 		"Azure Pipelines"
 	],
+	"content": {
+		"details": {
+			"path": "overview.md"
+		},
+		"license": {
+			"path": "LICENSE"
+		}
+	},
+	"links": {
+		"home": {
+			"uri": "http://evergrowth.ca"
+		},
+		"repository": {
+			"uri": "https://github.com/crazycga/bcdevopsextension"
+		},
+		"issues": {
+			"uri": "https://github.com/crazycga/bcdevopsextension/issues"
+		}
+	},
+	"repository": {
+		"type": "git",
+		"uri": "https://github.com/crazycga/bcdevopsextension"
+	},
+	"branding": {
+		"color": "#518c53",
+		"theme": "dark"
+	},
+	"galleryflags": [
+		"Preview",
+		"Public"
+	],
 	"files": [
+		{
+			"path": "overview.md",
+			"addressable": false
+		},
 		{
 			"path": "Get-VSIXCompiler"
 		},
@@ -22,17 +69,6 @@
 		},
 		{
 			"path": "Build-ALPackage"
-		},
-		{
-			"path": ".",
-			"exclude": [
-				"**/Tests/**",
-				"**/*.Tests.ps1",
-				"**/__tests__/**",
-				"**/*.Test.*",
-				"README.tests.md",
-				"**/02c03923-c68c-4d9f-8779-4d81eb807bc9/**"
-			]
 		}
 	],
 	"contributions": [
