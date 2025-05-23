@@ -1,9 +1,11 @@
 . "./function_Get-VSIXCompiler.ps1"
 
-Write-Host "Getting AL Compiler:"
-Write-Host ("  {0,-20} = {1}" -f "DownloadDirectory", $env:DownloadDirectory)
+$localDownloadDirectory = Get-VstsInput -Name 'DownloadDirectory' -Require
 
-$vsixResult = Get-VSIXCompiler -DownloadDirectory $env:DownloadDirectory
+Write-Host "Getting AL Compiler:"
+Write-Host ("  {0,-20} = {1}" -f "DownloadDirectory", $localDownloadDirectory)
+
+$vsixResult = Get-VSIXCompiler -DownloadDirectory $localDownloadDirectory
 
 if (-not $vsixResult -or `
     [string]::IsNullOrWhiteSpace($vsixResult.Version) -or `

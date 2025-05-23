@@ -9,7 +9,7 @@
     as a response.  This is a Windows only routine, as it relies upon DOM to parse the response on the first query (as though it were a user.)  This is
     required because the actual website responds with a series of JS and other reactive components, and ms-dynamics-smb.al is not listed in the marketplace
     query API.
-.PARAMETER downloadDirectory
+.PARAMETER DownloadDirectory
     The directory in which to stage the artifacts that are being downloaded; the routine will automatically place the decompiled result in this directory with
     a subdirectory of "/expanded"
 .OUTPUTS
@@ -25,12 +25,11 @@
 function Get-VSIXCompiler {
     param(
         [Parameter(Mandatory)]
-        [String]$downloadDirectory
+        [String]$DownloadDirectory
     )
-    # sanity-check: is the user feeling okay?
 
-    if (-not (Test-Path -Path $downloadDirectory)){
-        throw "The directory $downloadDirectory does not exist; please specify an existing directory";
+    if (-not (Test-Path -Path $downloadDirectory)) {
+        New-Item -ItemType Directory -Path $DownloadDirectory
     }
 
     # Initialize variables

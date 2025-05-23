@@ -84,14 +84,22 @@ function Get-BCDependencies {
         $appJSONFile = ".\app.json"
     }
     else {
-        $appJSONFile = $PathToAppJson
+        $appJSONFile = Join-Path -Path $PathToAppJson -ChildPath "app.json"
     }
+
+    Write-Verbose "appJSONFile: $appJSONFile"    
 
     if (-not (Test-Path -Path $appJSONFile)) {
         throw "app.json not found at '$appJSONFile'; exiting..."
+    } else {
+        Write-Verbose "confirmed existence of app.json file at $appJSONFile"
     }
 
+    Write-Verbose "starting parsing app.json"
+
     $appJSON = Get-Content -Raw $appJSONFile | ConvertFrom-Json
+
+    Write-Verbose "converted app.json; confirming now"
 
     if (-not $appJSON -or -not $appJSON.id -or -not $appJSON.name -or -not $appJSON.publisher) {
         throw "app.json found at '$appJSONFile' does not appear to be valid; exiting..."
@@ -106,8 +114,7 @@ function Get-BCDependencies {
     # Test the path to the packages output directory (if specified, default if not), create it if it doesn't exist
 
     if (-not $PathToPackagesDirectory) {
-        $scriptDir = Split-Path -Parent ($MyInvocation.MyCommand.Path ?? $PWD.Path)
-        $targetPackageDirectory = Join-Path -Path $scriptDir -ChildPath ".alpackages"
+        $targetPackageDirectory = Join-Path -Path $PathToAppJson -ChildPath ".alpackages"
     }
     else {
         $targetPackageDirectory = $PathToPackagesDirectory

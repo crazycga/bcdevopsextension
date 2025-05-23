@@ -1,22 +1,31 @@
 . "./function_Add-BaseDependenciesIfMissing.ps1"
 . "./function_Get-BCDependencies.ps1"
 
+$local_TestLoginOnly = Get-VstsInput -Name 'TestLoginOnly'
+$local_SkipDefaultDependencies = Get-VstsInput -Name 'SkipDefaultDependencies'
+$local_TenantId = Get-VstsInput -Name 'TenantId'
+$local_EnvironmentName = Get-VstsInput -Name 'EnvironmentName'
+$local_ClientId = Get-VstsInput -Name 'ClientId'
+$local_ClientSecret = Get-VstsInput -Name 'ClientSecret'
+$local_PathToAppJson = Get-VstsInput -Name 'PathToAppJson'
+$local_PathToPackagesDirectory = Get-VstsInput -Name 'PathToPackagesDirectory'
+
 $switchParams = @{}
 
-if ($env:TestLoginOnly -eq 'true') {
+if ($local_TestLoginOnly -eq 'true') {
         $switchParams["TestLoginOnly"] = $true
 }
 
-if ($env:SkipDefaultDependencies -eq 'true') {
+if ($local_SkipDefaultDependencies -eq 'true') {
         $switchParams["SkipDefaultDependencies"] = $true
 }
 
-$switchParams["TenantId"]                       = $env:TenantId
-$switchParams["EnvironmentName"]                = $env:EnvironmentName
-$switchParams["ClientId"]                       = $env:ClientId
-$switchParams["ClientSecret"]                   = $env:ClientSecret
-$switchParams["PathToAppJson"]                  = $env:PathToAppJson
-$switchParams["PathToPackagesDirectory"]        = $env:PathToPackagesDirectory
+$switchParams["TenantId"]                       = $local_TenantId
+$switchParams["EnvironmentName"]                = $local_EnvironmentName
+$switchParams["ClientId"]                       = $local_ClientId
+$switchParams["ClientSecret"]                   = $local_ClientSecret
+$switchParams["PathToAppJson"]                  = $local_PathToAppJson
+$switchParams["PathToPackagesDirectory"]        = $local_PathToPackagesDirectory
 
 Write-Host "Getting AL Dependencies:"
 $switchParams.GetEnumerator() | ForEach-Object {
