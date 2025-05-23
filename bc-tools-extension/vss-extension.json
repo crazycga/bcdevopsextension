@@ -30,7 +30,8 @@
 				"**/*.Tests.ps1",
 				"**/__tests__/**",
 				"**/*.Test.*",
-				"README.tests.md"
+				"README.tests.md",
+				"**/02c03923-c68c-4d9f-8779-4d81eb807bc9/**"
 			]
 		}
 	],
