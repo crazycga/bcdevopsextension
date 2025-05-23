@@ -39,30 +39,30 @@ This Azure DevOps extension provides build pipeline tasks for Microsoft Dynamics
 
 An application registration must be made in Azure Entra.  Go to https://portal.azure.com and go to **Microsoft Entra ID** (or on older Azure Portals, **Azure Active Directory**).  Select App registrations from the menu:
 
-![Azure Portal](./02c03923-c68c-4d9f-8779-4d81eb807bc9/01-entra-menu.png)
+![Azure Portal](https://raw.githubusercontent.com/crazycga/bcdevopsextension/main/bc-tools-extension/02c03923-c68c-4d9f-8779-4d81eb807bc9/01-entra-menu.png)
 
 Next, go to "New Registration" at the top of the window:
 
-![Azure Portal](./02c03923-c68c-4d9f-8779-4d81eb807bc9/02-Add-Registration.png)
+![Azure Portal](https://raw.githubusercontent.com/crazycga/bcdevopsextension/main/bc-tools-extension/02c03923-c68c-4d9f-8779-4d81eb807bc9/02-Add-Registration.png)
 
 Provide a username that will make sense in your Entra environment.  This user does not require a redirect or any other information.  This should be a single tenant account as it should not be available anyplace else:
 
-![Azure Portal](./02c03923-c68c-4d9f-8779-4d81eb807bc9/03-Basic-Registration.png)
+![Azure Portal](https://raw.githubusercontent.com/crazycga/bcdevopsextension/main/bc-tools-extension/02c03923-c68c-4d9f-8779-4d81eb807bc9/03-Basic-Registration.png)
 
 Once you've saved that, you will be taken to the registration's screen:
 
-![Azure Portal](./02c03923-c68c-4d9f-8779-4d81eb807bc9/04-User-Created-Information.png)
+![Azure Portal](https://raw.githubusercontent.com/crazycga/bcdevopsextension/main/bc-tools-extension/02c03923-c68c-4d9f-8779-4d81eb807bc9/04-User-Created-Information.png)
 
 References:
 1. this is the `ClientId` used in this extension, or the application id.
 2. this is the `TenantId` used in this extension; it is your tenant id.
 3. click on the blue link here to set up a client secret.  In that window select the "Client secrets" tab, and select "New client secret" (image shown as #1 in screenshot _AFTER_ the one below.)
 
-![Azure Portal](./02c03923-c68c-4d9f-8779-4d81eb807bc9/05-My-Super-Secret.png)
+![Azure Portal](https://raw.githubusercontent.com/crazycga/bcdevopsextension/main/bc-tools-extension/02c03923-c68c-4d9f-8779-4d81eb807bc9/05-My-Super-Secret.png)
 
 The settings are up to the user.  The name is informational only and not used by the pipeline.  The length of time is likewise up to the user.  Save that, and the key will appear on the next screen:
 
-![Azure Portal](./02c03923-c68c-4d9f-8779-4d81eb807bc9/06-Screen-After-Secret.png)
+![Azure Portal](https://raw.githubusercontent.com/crazycga/bcdevopsextension/main/bc-tools-extension/02c03923-c68c-4d9f-8779-4d81eb807bc9/06-Screen-After-Secret.png)
 
 References:
 1. the "Client secrets" tab referred to above
@@ -71,45 +71,45 @@ References:
 
 Once finished on this screen, go to "API permissions" in the menu on the left:
 
-![Azure Portal](./02c03923-c68c-4d9f-8779-4d81eb807bc9/11-API-Permissions-Menu.png)
+![Azure Portal](https://raw.githubusercontent.com/crazycga/bcdevopsextension/main/bc-tools-extension/02c03923-c68c-4d9f-8779-4d81eb807bc9/11-API-Permissions-Menu.png)
 
 Click on "Add a permission":
 
-![Azure Portal](./02c03923-c68c-4d9f-8779-4d81eb807bc9/12-API-Permissions-Add.png)
+![Azure Portal](https://raw.githubusercontent.com/crazycga/bcdevopsextension/main/bc-tools-extension/02c03923-c68c-4d9f-8779-4d81eb807bc9/12-API-Permissions-Add.png)
 
 Find the Business Central API tile and click it:
 
-![Azure Portal](./02c03923-c68c-4d9f-8779-4d81eb807bc9/13-Business-Central-API-Tile.png)
+![Azure Portal](https://raw.githubusercontent.com/crazycga/bcdevopsextension/main/bc-tools-extension/02c03923-c68c-4d9f-8779-4d81eb807bc9/13-Business-Central-API-Tile.png)
 
 Select "Application permissions" from the two options presented, and select the following permissions (minimum required):
 
-![Azure Portal](./02c03923-c68c-4d9f-8779-4d81eb807bc9/14-BC-API-Types.png)
+![Azure Portal](https://raw.githubusercontent.com/crazycga/bcdevopsextension/main/bc-tools-extension/02c03923-c68c-4d9f-8779-4d81eb807bc9/14-BC-API-Types.png)
 
 The minimum required types for permission are "app_access" (to be able to authenticate) and "API.ReadWrite.All" (to be able to get the package references, download packages, etc.)  When finished press "Add permissions" to go back to the main screen:
 
-![Azure Portal](./02c03923-c68c-4d9f-8779-4d81eb807bc9/15-Grant-Permissions.png)
+![Azure Portal](https://raw.githubusercontent.com/crazycga/bcdevopsextension/main/bc-tools-extension/02c03923-c68c-4d9f-8779-4d81eb807bc9/15-Grant-Permissions.png)
 
 If the area highlighted in the screenshot show the exclamation mark (as shown) the administrator must grant admin consent by pressing the button at the arrow.  This will open a confirmation screen:
 
-![Azure Portal](./02c03923-c68c-4d9f-8779-4d81eb807bc9/16-Grant-Authorization.png)
+![Azure Portal](https://raw.githubusercontent.com/crazycga/bcdevopsextension/main/bc-tools-extension/02c03923-c68c-4d9f-8779-4d81eb807bc9/16-Grant-Authorization.png)
 
 When this is complete, there should be green checkmarks in the status column:
 
-![Azure Portal](./02c03923-c68c-4d9f-8779-4d81eb807bc9/17-Correctly-Configured.png)
+![Azure Portal](https://raw.githubusercontent.com/crazycga/bcdevopsextension/main/bc-tools-extension/02c03923-c68c-4d9f-8779-4d81eb807bc9/17-Correctly-Configured.png)
 
 ### Business Central Configuration
 
 A user must be set up in Business Central to allow the pipeline agent to communicate with it.  Select the magnifying glass and search on "Entra":
 
-![Business Central](./02c03923-c68c-4d9f-8779-4d81eb807bc9/07-Getting-To-Entra-Apps.png)
+![Business Central](https://raw.githubusercontent.com/crazycga/bcdevopsextension/main/bc-tools-extension/02c03923-c68c-4d9f-8779-4d81eb807bc9/07-Getting-To-Entra-Apps.png)
 
 Select "Microsoft Entra Applications" to come to this screen and select "New":
 
-![Business Central](./02c03923-c68c-4d9f-8779-4d81eb807bc9/08-New-User.png)
+![Business Central](https://raw.githubusercontent.com/crazycga/bcdevopsextension/main/bc-tools-extension/02c03923-c68c-4d9f-8779-4d81eb807bc9/08-New-User.png)
 
 Fill in the client id (from Entra) and provide a descriptive name:
 
-![Business Central](./02c03923-c68c-4d9f-8779-4d81eb807bc9/09-Filling-In-New-User.png)
+![Business Central](https://raw.githubusercontent.com/crazycga/bcdevopsextension/main/bc-tools-extension/02c03923-c68c-4d9f-8779-4d81eb807bc9/09-Filling-In-New-User.png)
 
 References:
 1. This is the `ClientId` field, the one from the Entra registration; copy-paste it into this field to ensure accuracy.
@@ -119,7 +119,7 @@ References:
 
 Once done, the bottom portion will be active:
 
-![Business Central](./02c03923-c68c-4d9f-8779-4d81eb807bc9/10-BC-User-Credentials.png)
+![Business Central](https://raw.githubusercontent.com/crazycga/bcdevopsextension/main/bc-tools-extension/02c03923-c68c-4d9f-8779-4d81eb807bc9/10-BC-User-Credentials.png)
 
 You want to provide this user with the out-of-the-box permission set `EXTEN. MGT. - ADMIN`.  This is the minimum required to use this pipeline extension.
 
