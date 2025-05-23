@@ -2,9 +2,8 @@
 	"manifestVersion": 1,
 	"id": "eg-bc-build-tasks",
 	"name": "Business Central Build Tasks",
-	"version": "0.1.0",
+	"version": "0.1.2",
 	"publisher": "Evergrowth",
-	"overview": "overview.md",
 	"targets": [
 		{
 			"id": "Microsoft.VisualStudio.Services"
@@ -27,11 +26,14 @@
 	],
 	"content": {
 		"details": {
-			"path": "overview.md"
+			"path": "README.md"
 		},
 		"license": {
 			"path": "LICENSE"
-		}
+		},
+		"privacy": {
+			"path": "PRIVACY.md"
+		}	
 	},
 	"links": {
 		"home": {
@@ -41,6 +43,9 @@
 			"uri": "https://github.com/crazycga/bcdevopsextension"
 		},
 		"issues": {
+			"uri": "https://github.com/crazycga/bcdevopsextension/issues"
+		},
+		"support": {
 			"uri": "https://github.com/crazycga/bcdevopsextension/issues"
 		}
 	},
@@ -57,10 +62,6 @@
 		"Public"
 	],
 	"files": [
-		{
-			"path": "overview.md",
-			"addressable": false
-		},
 		{
 			"path": "Get-VSIXCompiler"
 		},
