@@ -1,0 +1,47 @@
+name: main-build
+
+on:
+  push:
+    tags:
+      - 'v*'
+      - 'dev-*'
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: '18'
+
+      - name: Install tfx-cli
+        run: npm install -g tfx-cli
+
+      - name: Build vss-extension.json dynamically
+        run: |
+          BRANCH=$(echo "${GITHUB_REF_NAME}" | sed 's/\//-/g')
+          ID="eg-bc-build-tasks"
+          NAME="Business Central Build Tasks"
+
+          if [[ "$GITHUB_REF_NAME" == dev-* ]]; then
+            ID="${ID}-dev"
+            NAME="${NAME} - DEV"
+          fi
+
+          jq --arg id "$ID" --arg name "$NAME" \
+            '.id = $id | .name = $name' \
+            vss-extension.template.json > vss-extension.json
+
+      - name: Compile Azure Devops Extension
+        run: tfx extension create --manifest-globs bc-tools-extension/vss-extension.json
+
+      - name: Upload VSIX artifact
+        uses: actions/upload-artifact@v3
+        with:
+          name: bc-extension-dev
+          path: '*.vsix'
