@@ -26,13 +26,13 @@
 	],
 	"content": {
 		"details": {
-			"path": "README.md"
+			"path": "bc-tools-extension/README.md"
 		},
 		"license": {
-			"path": "LICENSE"
+			"path": "bc-tools-extension/LICENSE"
 		},
 		"privacy": {
-			"path": "PRIVACY.md"
+			"path": "bc-tools-extension/PRIVACY.md"
 		}	
 	},
 	"links": {
@@ -66,13 +66,13 @@
 	],
 	"files": [
 		{
-			"path": "Get-VSIXCompiler"
+			"path": "bc-tools-extension/Get-VSIXCompiler"
 		},
 		{
-			"path": "Get-BCDependencies"
+			"path": "bc-tools-extension/Get-BCDependencies"
 		},
 		{
-			"path": "Build-ALPackage"
+			"path": "bc-tools-extension/Build-ALPackage"
 		}
 	],
 	"contributions": [
