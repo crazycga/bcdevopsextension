@@ -55,7 +55,7 @@ jobs:
           path: 'bc-tools-extension/*.vsix'
 
       - name: Publish to marketplace
-        if: ${{ github.event.inputs.publish == 'true' }}
+        if: ${{ github.event.inputs.publish == 'true' || (github.event_name == 'push' && (github.ref == 'refs/heads/main' || github.ref == 'refs/heads/dev-trunk')) }}
         run: |
           if [ -z "$ADO_PAT" ]; then
             echo "ADO_PAT not available; skipping publish"
