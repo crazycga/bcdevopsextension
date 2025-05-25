@@ -66,13 +66,13 @@
 	],
 	"files": [
 		{
-			"path": "bc-tools-extension/Get-VSIXCompiler"
+			"path": "Get-VSIXCompiler"
 		},
 		{
-			"path": "bc-tools-extension/Get-BCDependencies"
+			"path": "Get-BCDependencies"
 		},
 		{
-			"path": "bc-tools-extension/Build-ALPackage"
+			"path": "Build-ALPackage"
 		}
 	],
 	"contributions": [
