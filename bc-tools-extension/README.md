@@ -9,6 +9,10 @@ This Azure DevOps extension provides build pipeline tasks for Microsoft Dynamics
 
 **This extension is only usable on Windows-based agents**
 
+[![main-build](https://github.com/crazycga/bcdevopsextension/actions/workflows/mainbuild.yml/badge.svg?branch=main)](https://github.com/crazycga/bcdevopsextension/actions/workflows/mainbuild.yml)
+
+[![main-build](https://github.com/crazycga/bcdevopsextension/actions/workflows/mainbuild.yml/badge.svg?branch=dev_trunk)](https://github.com/crazycga/bcdevopsextension/actions/workflows/mainbuild.yml)
+
 ## Features
 
 * ✅ **Get AL Compiler**
