@@ -22,20 +22,9 @@ jobs:
       - name: Install tfx-cli
         run: npm install -g tfx-cli
 
-      - name: Build vss-extension.json dynamically
-        run: |
-          BRANCH=$(echo "${GITHUB_REF_NAME}" | sed 's/\//-/g')
-          ID="eg-bc-build-tasks"
-          NAME="Business Central Build Tasks"
-
-          if [[ "$GITHUB_REF_NAME" == dev-* ]]; then
-            ID="${ID}-dev"
-            NAME="${NAME} - DEV"
-          fi
-
-          jq --arg id "$ID" --arg name "$NAME" \
-            '.id = $id | .name = $name' \
-            vss-extension.template.json > vss-extension.json
+      - name: Inject dynamic build parameters into json files
+        shell: pwsh
+        run: '_tasks/Initialize-BuildContext.ps1'
 
       - name: Compile Azure Devops Extension
         run: tfx extension create --manifest-globs bc-tools-extension/vss-extension.json
