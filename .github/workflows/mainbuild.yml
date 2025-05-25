@@ -5,7 +5,7 @@ on:
     branches:
       - main
       - dev-trunk
-  #do not add tags: or the CI will re-fire on the tagging step
+  #do not add tags: or the CI will re-fire on the tagging step; adding comment for trigger request
   workflow_dispatch:
     inputs:
       publish:
