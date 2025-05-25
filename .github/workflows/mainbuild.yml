@@ -36,7 +36,7 @@ jobs:
         run: '_tasks/Initialize-BuildContext.ps1 -Environment $env:BUILD_TYPE -BuildNumber $env:GITHUB_RUN_NUMBER'
 
       - name: Compile Azure Devops Extension
-        run: tfx extension create --manifest-globs bc-tools-extension/vss-extension.json
+        run: tfx extension create --manifest-globs vss-extension.json
         working-directory: bc-tools-extension
 
       - name: Upload VSIX artifact
