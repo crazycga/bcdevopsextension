@@ -26,13 +26,13 @@
 	],
 	"content": {
 		"details": {
-			"path": "bc-tools-extension/README.md"
+			"path": "README.md"
 		},
 		"license": {
-			"path": "bc-tools-extension/LICENSE"
+			"path": "LICENSE"
 		},
 		"privacy": {
-			"path": "bc-tools-extension/PRIVACY.md"
+			"path": "PRIVACY.md"
 		}	
 	},
 	"links": {
