@@ -1,0 +1,56 @@
+{
+	"version": {
+		"major": 0,
+		"minor": 1,
+		"patch": 3,
+		"build": 0
+	},
+	"dev": {
+		"environment": "dev",
+		"extensionSuffix": "-dev",
+		"tagSuffix": "-alpha",
+		"galleryFlags": [
+			"Preview",
+			"Private"
+		],
+		"vssLocation": "bc-tools-extension/vss-extension.json",
+		"tasks": {
+			"EGBuildALPackage": {
+				"location": "bc-tools-extension/Build-ALPackage/task.json",
+				"taskGuid": "d473aec5-b7f5-46c4-9b57-0fb09866ca12"
+			},
+			"EGGetALDependencies": {
+				"location": "bc-tools-extension/Get-BCDependencies/task.json",
+				"taskGuid": "1bb08493-278b-4d2a-92ac-ba0d2daaa1cc"
+			},
+			"EGGetALCompiler": {
+				"location": "bc-tools-extension/Get-VSIXCompiler/task.json",
+				"taskGuid": "6af71bc7-0491-4779-8e7d-bbc4eeeadbe0"
+			}
+		}
+	},
+	"prod": {
+		"environment": "prod",
+		"extensionSuffix": "",
+		"tagSuffix": "",
+		"galleryFlags": [
+			"Preview",
+			"Public"
+		],
+		"vssLocation": "bc-tools-extension/vss-extension.json",
+		"tasks": {
+			"EGBuildALPackage": {
+				"location": "bc-tools-extension/Build-ALPackage/task.json",
+				"taskGuid": "dbb3137f-6afc-4afc-ac5c-507602c2b063"
+			},
+			"EGGetALDependencies": {
+				"location": "bc-tools-extension/Get-BCDependencies/task.json",
+				"taskGuid": "0d4e6693-bdcb-47c0-a373-67a34549da07"
+			},
+			"EGGetALCompiler": {
+				"location": "bc-tools-extension/Get-VSIXCompiler/task.json",
+				"taskGuid": "c8d27640-a774-4ed5-a2bd-b2a6d22963e7"
+			}
+		}
+	}
+}

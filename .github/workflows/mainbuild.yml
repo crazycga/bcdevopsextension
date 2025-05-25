@@ -2,16 +2,58 @@ name: main-build
 
 on:
   push:
-    tags:
-      - 'v*'
-      - 'dev-*'
+    branches:
+      - main
+      - dev-trunk
+  #do not add tags: or the CI will re-fire on the tagging step; adding comment for trigger request
   workflow_dispatch:
+    inputs:
+      publish:
+        description: 'Publish to Visual Studio Marketplace?'
+        required: true
+        default: 'false'
+        type: choice
+        options:
+          - 'true'
+          - 'false'
 
 jobs:
   build:
     runs-on: ubuntu-latest
 
     steps:
+      - name: Set BUILD_TYPE based on run
+        id: set-build-type
+        run: |
+          if [[ "${{ github.ref_name }}" == "main" ]]; then
+            echo "BUILD_TYPE=prod" >> $GITHUB_ENV
+          else
+            echo "BUILD_TYPE=dev" >> $GITHUB_ENV
+          fi
+
+      - name: Determine publication status
+        id: decide-publish
+        run: |
+          # Default to false
+          SHOULD_PUBLISH="false"
+
+          # If it's a manual run with publish explicitly set
+          if [[ "${{ github.event_name }}" == "workflow_dispatch" ]]; then
+            if [[ "${{ github.event.inputs.publish }}" == "true" ]]; then
+              SHOULD_PUBLISH="true"
+            fi
+          # Or if it's a push to main or dev-trunk and we have a PAT
+          elif [[ "${{ github.event_name }}" == "push" && -n "$ADO_PAT" ]]; then
+            if [[ "${{ github.ref }}" == "refs/heads/main" || "${{ github.ref }}" == "refs/heads/dev-trunk" ]]; then
+              SHOULD_PUBLISH="true"
+            fi
+          fi
+
+          echo "SHOULD_PUBLISH=$SHOULD_PUBLISH" >> $GITHUB_ENV
+          echo "SHOULD_PUBLISH was set to: $SHOULD_PUBLISH"
+        env:
+          ADO_PAT: ${{ secrets.ADO_PAT }}
+
       - uses: actions/checkout@v4
 
       - name: Set up Node.js
@@ -22,26 +64,57 @@ jobs:
       - name: Install tfx-cli
         run: npm install -g tfx-cli
 
-      - name: Build vss-extension.json dynamically
-        run: |
-          BRANCH=$(echo "${GITHUB_REF_NAME}" | sed 's/\//-/g')
-          ID="eg-bc-build-tasks"
-          NAME="Business Central Build Tasks"
-
-          if [[ "$GITHUB_REF_NAME" == dev-* ]]; then
-            ID="${ID}-dev"
-            NAME="${NAME} - DEV"
-          fi
-
-          jq --arg id "$ID" --arg name "$NAME" \
-            '.id = $id | .name = $name' \
-            vss-extension.template.json > vss-extension.json
+      - name: Inject dynamic build parameters into json files
+        shell: pwsh
+        run: '_tasks/Initialize-BuildContext.ps1 -Environment $env:BUILD_TYPE -BuildNumber $env:GITHUB_RUN_NUMBER'
 
       - name: Compile Azure Devops Extension
-        run: tfx extension create --manifest-globs bc-tools-extension/vss-extension.json
+        run: tfx extension create --manifest-globs vss-extension.json
+        working-directory: bc-tools-extension
 
       - name: Upload VSIX artifact
         uses: actions/upload-artifact@v4
         with:
           name: bc-extension-dev
-          path: '*.vsix'
+          path: 'bc-tools-extension/*.vsix'
+
+      - name: Publish to marketplace
+        if: env.SHOULD_PUBLISH == 'true'
+        run: |
+          if [ -z "$ADO_PAT" ]; then
+            echo "ADO_PAT not available; skipping publish"
+            exit 0
+          fi
+
+          if ! ls *.vsix 1> /dev/null 2>&1; then
+            echo "VSIX not found; skipping publish"
+            exit 0
+          fi
+
+          VSIX_FILE=$(ls *.vsix | head -n 1)
+
+          echo "Publishing using VSIX:"
+          echo "$VSIX_FILE"
+
+          tfx extension publish --vsix "$VSIX_FILE" --token $ADO_PAT
+        working-directory: bc-tools-extension
+        env:
+          ADO_PAT: ${{ secrets.ADO_PAT }}
+
+      - name: Tag repo with new version
+        if: env.SHOULD_PUBLISH == 'true'
+        shell: pwsh
+        run: |
+          $versionPath = "_tasks/environments.json"
+          $config = Get-Content $versionPath | ConvertFrom-Json
+          $version = "$($config.version.major).$($config.version.minor).$($config.version.patch).$env:GITHUB_RUN_NUMBER"
+          $tagName = "v$version"
+
+          Write-Host "Tagging version: $tagName"
+          
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git tag -a "$tagName" -m "[skip ci] Published extension version $tagName from commit $(git rev-parse --short HEAD)"
+          git push origin "$tagName"
+
+          Write-Host "Successfully pushed tag version $tagName from commit $(git rev-parse --short HEAD)"
