@@ -27,7 +27,7 @@ if (-not $envData) {
 Write-Host "Creating version for environment '$($envData.Environment)'"
 
 $version = $config.version
-$versionString = "$($version.major).$($version.minor).$($version.patch).$($version.build)"
+$versionString = "$($version.major).$($version.minor).$($version.patch).$($BuildNumber)"
 Write-Host "Injecting version number '$versionString'"
 
 $vssPath = $envData.vssLocation
