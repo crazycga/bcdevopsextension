@@ -2,9 +2,10 @@ name: main-build
 
 on:
   push:
-    tags:
-      - 'v*'
-      - 'dev-*'
+    branches:
+      - main
+      - dev-trunk
+  #do not add tags: or the CI will re-fire on the tagging step
   workflow_dispatch:
     inputs:
       publish:
@@ -29,6 +30,29 @@ jobs:
           else
             echo "BUILD_TYPE=dev" >> $GITHUB_ENV
           fi
+
+      - name: Determine publication status
+        id: decide-publish
+        run: |
+          # Default to false
+          SHOULD_PUBLISH="false"
+
+          # If it's a manual run with publish explicitly set
+          if [[ "${{ github.event_name }}" == "workflow_dispatch" ]]; then
+            if [[ "${{ github.event.inputs.publish }}" == "true" ]]; then
+              SHOULD_PUBLISH="true"
+            fi
+          # Or if it's a push to main or dev-trunk and we have a PAT
+          elif [[ "${{ github.event_name }}" == "push" && -n "$ADO_PAT" ]]; then
+            if [[ "${{ github.ref }}" == "refs/heads/main" || "${{ github.ref }}" == "refs/heads/dev-trunk" ]]; then
+              SHOULD_PUBLISH="true"
+            fi
+          fi
+
+          echo "SHOULD_PUBLISH=$SHOULD_PUBLISH" >> $GITHUB_ENV
+          echo "SHOULD_PUBLISH was set to: $SHOULD_PUBLISH"
+        env:
+          ADO_PAT: ${{ secrets.ADO_PAT }}
 
       - uses: actions/checkout@v4
 
@@ -55,7 +79,7 @@ jobs:
           path: 'bc-tools-extension/*.vsix'
 
       - name: Publish to marketplace
-        if: ${{ github.event.inputs.publish == 'true' || (github.event_name == 'push' && (github.ref == 'refs/heads/main' || github.ref == 'refs/heads/dev-trunk')) }}
+        if: env.SHOULD_PUBLISH == 'true'
         run: |
           if [ -z "$ADO_PAT" ]; then
             echo "ADO_PAT not available; skipping publish"
@@ -76,3 +100,21 @@ jobs:
         working-directory: bc-tools-extension
         env:
           ADO_PAT: ${{ secrets.ADO_PAT }}
+
+      - name: Tag repo with new version
+        if: env.SHOULD_PUBLISH == 'true'
+        shell: pwsh
+        run: |
+          $versionPath = "_tasks/environments.json"
+          $config = Get-Content $versionPath | ConvertFrom-Json
+          $version = "$($config.version.major).$($config.version.minor).$($config.version.patch).$env:GITHUB_RUN_NUMBER"
+          $tagName = "v$version"
+
+          Write-Host "Tagging version: $tagName"
+          
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git tag -a "$tagName" -m "[skip ci] Published extension version $tagName from commit $(git rev-parse --short HEAD)"
+          git push origin "$tagName"
+
+          Write-Host "Successfully pushed tag version $tagName from commit $(git rev-parse --short HEAD)"
