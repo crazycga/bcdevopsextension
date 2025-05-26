@@ -1,7 +1,18 @@
+function ConvertFrom-DevopsPath {
+    param([Parameter(Mandatory)][string]$Path)
+    if ($PSVersionTable.PSEdition -eq 'Core' -and $env:OS -like '*Windows*') {
+        return [System.IO.Path]::GetFullPath($Path.Replace('/', '\'))
+    } elseif ([System.Runtime.InteropServices.RuntimeInformation]::IsOSPlatform([System.Runtime.InteropServices.OSPlatform]::Windows)) {
+        return [System.IO.Path]::GetFullPath($Path.Replace('/', '\'))
+    } elseif ([System.Runtime.InteropServices.RuntimeInformation]::IsOSPlatform([System.Runtime.InteropServices.OSPlatform]::Linux)) {
+        return [System.IO.Path]::GetFullPath($Path)
+    } else {
+        return $null
+    }
+}
+
 . "./function_Get-VSIXCompiler.ps1"
 . "./function_Expand-Folder.ps1"
-. (Join-Path -Path (Split-Path -Parent $MyInvocation.MyCommand.Path) -ChildPath "../_common/CommonTools.ps1")
-
 
 $localDownloadDirectory = Get-VstsInput -Name 'DownloadDirectory' -Require
 $localCompilerVersion = Get-VstsInput -Name 'Version' -Require
