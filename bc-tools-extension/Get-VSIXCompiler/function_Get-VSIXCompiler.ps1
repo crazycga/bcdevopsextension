@@ -95,7 +95,7 @@ function Get-VSIXCompilerVersion {
     Write-Host "Acquisition: $downloadUrl"
 
     if (-not (Test-Path -Path $DownloadDirectory)) {
-        New-Item -ItemType Directory -Name $DownloadDirectory
+        New-Item -ItemType Directory -Path $DownloadDirectory
         Write-Host "Creating directory: $DownloadDirectory"
     }
 
