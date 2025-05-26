@@ -18,8 +18,8 @@ $localDownloadDirectory = Get-VstsInput -Name 'DownloadDirectory' -Require
 $localCompilerVersion = Get-VstsInput -Name 'Version' -Require
 
 Write-Host "Getting AL Compiler:"
-Write-Host ("  {0,-20} = {1}" -f "DownloadDirectory", $localDownloadDirectory)
-Write-Host ("  {0,-20} = {1}" -f "Version", $localCompilerVersion)
+Write-Host ("  {0,-30} = {1}" -f "DownloadDirectory", $localDownloadDirectory)
+Write-Host ("  {0,-30} = {1}" -f "Version", $localCompilerVersion)
 
 Write-Host "Normalizing directory reference: $localDownloadDirectory"
 $localDownloadDirectory = ConvertFrom-DevopsPath $localDownloadDirectory
@@ -36,7 +36,7 @@ if (-not $vsixResult -or `
 }
 
 Write-Host "Variable assignments being set:"
-Write-Host ("  {0,-20} = {1}" -f "alVersion", $vsixResult.Version)
+Write-Host ("  {0,-30} = {1}" -f "alVersion", $vsixResult.Version)
 Write-Host "##vso[task.setvariable variable=alVersion;isOutput=true]$vsixResult.Version"
-Write-Host ("  {0,-20} = {1}" -f "alPath", $vsixResult.ALEXEPath)
+Write-Host ("  {0,-30} = {1}" -f "alPath", $vsixResult.ALEXEPath)
 Write-Host "##vso[task.setvariable variable=alPath;isOutput=true]$vsixResult.ALEXEPath"
