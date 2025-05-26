@@ -12,16 +12,20 @@ function Get-VSIXCompilerVersion {
     $ProgressPreference = 'SilentlyContinue'
 
     Write-Host "Determining platform"
-    $platform = if ($IsWindows) {
-        "win32"
+    if ($PSVersionTable.PSEdition -eq 'Core' -and $env:OS -like '*Windows*') {
+        $platform = "win32"
     }
-    elseif ($IsLinux) {
-        "linux"
+    elseif ([System.Runtime.InteropServices.RuntimeInformation]::IsOSPlatform([System.Runtime.InteropServices.OSPlatform]::Windows)) {
+        $platform = "win32"
+    }
+    elseif ([System.Runtime.InteropServices.RuntimeInformation]::IsOSPlatform([System.Runtime.InteropServices.OSPlatform]::Linux)) {
+        $platform = "linux"
     }
     else {
-        Write-Error "Unsupported platform; this routine only supports Linux or Windows"
+        Write-Error "Unsupported platform: $([System.Runtime.InteropServices.RuntimeInformation]::OSDescription)"
         exit 1
     }
+    
     Write-Host "Detected platform: $platform"
     
     $apiUrl = "https://marketplace.visualstudio.com/_apis/public/gallery/extensionquery"
@@ -114,17 +118,26 @@ function Get-VSIXCompilerVersion {
     Expand-Folder -FileName $newPath -ExtractFolder "extension/bin/Analyzers" -TopExtractedFolder $expandFolder
 
     # Step 5: Finish
-    $expectedEnvPath = if ($IsWindows) {
+    $expectedEnvPath = if ($PSVersionTable.PSEdition -eq 'Core' -and $env:OS -like '*Windows*') {
         "win32"
-    } else {
+    }
+    elseif ([System.Runtime.InteropServices.RuntimeInformation]::IsOSPlatform([System.Runtime.InteropServices.OSPlatform]::Windows)) {
+        "win32"
+    }
+    elseif ([System.Runtime.InteropServices.RuntimeInformation]::IsOSPlatform([System.Runtime.InteropServices.OSPlatform]::Linux)) {
         "linux"
     }
 
-    $expectedCompilerName = if ($IsWindows) {
+    $expectedCompilerName = if ($PSVersionTable.PSEdition -eq 'Core' -and $env:OS -like '*Windows*') {
         "alc.exe"
-    } else {
+    }
+    elseif ([System.Runtime.InteropServices.RuntimeInformation]::IsOSPlatform([System.Runtime.InteropServices.OSPlatform]::Windows)) {
+        "alc.exe"
+    }
+    elseif ([System.Runtime.InteropServices.RuntimeInformation]::IsOSPlatform([System.Runtime.InteropServices.OSPlatform]::Linux)) {
         "alc"
     }
+
 
     $ALEXEPath = Join-Path -Path $expandFolder -ChildPath (Join-Path -Path $expectedEnvPath -ChildPath $expectedCompilerName)
 

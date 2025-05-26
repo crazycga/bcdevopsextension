@@ -47,10 +47,13 @@ function Build-ALPackage {
     )
 
     try {
-        if ($IsWindows) {
+        if ($PSVersionTable.PSEdition -eq 'Core' -and $env:OS -like '*Windows*') {
             $alcPath = Join-Path -Path $ALEXEPath -ChildPath "win32"
             $alcReference = Join-Path -Path $alcPath -ChildPath "ALC.EXE"
-        } elseif ($IsLinux) {
+        } elseif ([System.Runtime.InteropServices.RuntimeInformation]::IsOSPlatform([System.Runtime.InteropServices.OSPlatform]::Windows)) {
+            $alcPath = Join-Path -Path $ALEXEPath -ChildPath "win32"
+            $alcReference = Join-Path -Path $alcPath -ChildPath "ALC.EXE"
+        } elseif ([System.Runtime.InteropServices.RuntimeInformation]::IsOSPlatform([System.Runtime.InteropServices.OSPlatform]::Linux)) {
             $alcPath = Join-Path -Path $ALEXEPath -ChildPath "linux"
             $alcReference = Join-Path -Path $alcPath -ChildPath "ALC"
         } else {
@@ -59,9 +62,11 @@ function Build-ALPackage {
         }
     }
     catch {
-        if ($IsWindows) {
+        if ($PSVersionTable.PSEdition -eq 'Core' -and $env:OS -like '*Windows*') {
             throw "An error occurred; it doesn't seem that $alcPath contains a folder called 'win32', or the folder $alcPath\win32 doesn't contain ALC.EXE"
-        } elseif ($IsLinux) {
+        } elseif ([System.Runtime.InteropServices.RuntimeInformation]::IsOSPlatform([System.Runtime.InteropServices.OSPlatform]::Windows)) {
+            throw "An error occurred; it doesn't seem that $alcPath contains a folder called 'win32', or the folder $alcPath\win32 doesn't contain ALC.EXE"
+        } elseif ([System.Runtime.InteropServices.RuntimeInformation]::IsOSPlatform([System.Runtime.InteropServices.OSPlatform]::Linux)) {
             throw "An error occurred; it doesn't seem that $alcPath contains a folder called 'linux', or the folder $alcPath\linux doesn't contain ALC"
         } else {
             throw "A different error has occurred: $($_.Exception.Message)"
