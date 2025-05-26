@@ -1,5 +1,7 @@
 . "./function_Get-VSIXCompiler.ps1"
 . "./function_Expand-Folder.ps1"
+. (Join-Path -Path (Split-Path -Parent $MyInvocation.MyCommand.Path) -ChildPath "../_common/CommonTools.ps1")
+
 
 $localDownloadDirectory = Get-VstsInput -Name 'DownloadDirectory' -Require
 $localCompilerVersion = Get-VstsInput -Name 'Version' -Require
@@ -7,6 +9,10 @@ $localCompilerVersion = Get-VstsInput -Name 'Version' -Require
 Write-Host "Getting AL Compiler:"
 Write-Host ("  {0,-20} = {1}" -f "DownloadDirectory", $localDownloadDirectory)
 Write-Host ("  {0,-20} = {1}" -f "Version", $localCompilerVersion)
+
+Write-Host "Normalizing directory reference: $localDownloadDirectory"
+$localDownloadDirectory = ConvertFrom-DevopsPath $localDownloadDirectory
+Write-Host "Normalized  directory reference: $localDownloadDirectory"
 
 $vsixResult = Get-VSIXCompilerVersion -DownloadDirectory $localDownloadDirectory -Version $localCompilerVersion
 
