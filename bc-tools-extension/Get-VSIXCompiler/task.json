@@ -25,9 +25,17 @@
       "name": "Version",
       "type": "string",
       "label": "Target Version",
-      "defaultValue": "($Build.ArtifactStagingDirectory)/expanded",
+      "defaultValue": "latest",
       "required": true,
-      "helpMarkDown": "This is the top level folder name for the expanded compiler.  Default: $(Build.ArtifactStagingDirectory)/expanded"
+      "helpMarkDown": "The exact version to download, or 'latest' to get the latest.  Default: 'latest'"
+    },
+    {
+      "name": "ExpansionDirectory",
+      "type": "string",
+      "label": "Expansion Directory",
+      "defaultValue": "expanded",
+      "required": false,
+      "helpMarkDown": "The top level directory name for the expanded files.  Default: 'expanded'"
     }    
   ],
   "execution": {
