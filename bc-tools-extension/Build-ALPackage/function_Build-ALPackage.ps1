@@ -47,17 +47,31 @@ function Build-ALPackage {
     )
 
     try {
-        $alcPath = Join-Path -Path $ALEXEPath -ChildPath "win32"
-        $alcReference = Join-Path -Path $alcPath -ChildPath "ALC.EXE"
+        if ($IsWindows) {
+            $alcPath = Join-Path -Path $ALEXEPath -ChildPath "win32"
+            $alcReference = Join-Path -Path $alcPath -ChildPath "ALC.EXE"
+        } elseif ($IsLinux) {
+            $alcPath = Join-Path -Path $ALEXEPath -ChildPath "linux"
+            $alcReference = Join-Path -Path $alcPath -ChildPath "ALC"
+        } else {
+            Write-Error "This is being run on an unsupported agent; exiting"
+            exit 1
+        }
     }
     catch {
-        throw "An error occurred; it doesn't seem that $alcPath contains a folder called 'win32', or the folder $alcPath\win32 doesn't contain ALC.EXE"
+        if ($IsWindows) {
+            throw "An error occurred; it doesn't seem that $alcPath contains a folder called 'win32', or the folder $alcPath\win32 doesn't contain ALC.EXE"
+        } elseif ($IsLinux) {
+            throw "An error occurred; it doesn't seem that $alcPath contains a folder called 'linux', or the folder $alcPath\linux doesn't contain ALC"
+        } else {
+            throw "A different error has occurred: $($_.Exception.Message)"
+        }
     }
     
     if (-not (Test-Path -Path $alcReference)){
-        throw "ALC.EXE not found in $alcPath"
+        throw "ALC[.EXE] not found in $alcPath"
     } else {
-        Write-Host "Found ALC.EXE at $alcPath"
+        Write-Host "Found ALC[.EXE] at $alcPath"
     }
 
     if (-not (Test-Path -Path $PackagesDirectory)) {

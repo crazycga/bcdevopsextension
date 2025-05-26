@@ -206,6 +206,11 @@ function Get-BCDependencies {
         Write-Host "Dependency $appName ($($dependency.id)) downloaded"
     }
 
+    if ($IsLinux) { 
+        Write-Host "Executing chmod to allow access for all of the extracted files"
+        chmod -R 644 $$TopExtractedFolder 
+    }
+
     ########################################################################################################################################
     # Internal function here
     ########################################################################################################################################  

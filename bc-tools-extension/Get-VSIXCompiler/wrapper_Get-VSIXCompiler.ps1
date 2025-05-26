@@ -1,11 +1,14 @@
 . "./function_Get-VSIXCompiler.ps1"
+. "./function_Expand_Folder.ps1"
 
 $localDownloadDirectory = Get-VstsInput -Name 'DownloadDirectory' -Require
+$localCompilerVersion = Get-VstsInput -Name 'Version' - Require
 
 Write-Host "Getting AL Compiler:"
 Write-Host ("  {0,-20} = {1}" -f "DownloadDirectory", $localDownloadDirectory)
+Write-Host ("  {0,-20} = {1}" -f "Version", $localCompilerVersion)
 
-$vsixResult = Get-VSIXCompiler -DownloadDirectory $localDownloadDirectory
+$vsixResult = Get-VSIXCompilerVersion -DownloadDirectory $localDownloadDirectory -Version $localCompilerVersion
 
 if (-not $vsixResult -or `
     [string]::IsNullOrWhiteSpace($vsixResult.Version) -or `
