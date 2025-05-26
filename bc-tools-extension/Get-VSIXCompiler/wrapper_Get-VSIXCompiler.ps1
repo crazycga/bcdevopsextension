@@ -2,7 +2,7 @@
 . "./function_Expand-Folder.ps1"
 
 $localDownloadDirectory = Get-VstsInput -Name 'DownloadDirectory' -Require
-$localCompilerVersion = Get-VstsInput -Name 'Version' - Require
+$localCompilerVersion = Get-VstsInput -Name 'Version' -Require
 $localTopLevelDirectory = Get-VstsInput -Name 'ExpansionDirectory'
 
 Write-Host "Getting AL Compiler:"
