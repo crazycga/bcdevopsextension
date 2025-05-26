@@ -20,7 +20,10 @@ function Expand-Folder {
     Write-Host "Expanding '$FileName' folder '$targetPrefix' to '$extractionPath'"
 
     $fs = [System.IO.File]::OpenRead($FileName)
-    $zip = [System.IO.Compression.ZipArchive]::new($fs, [System.IO.Compression.ZipArchiveMode]::Read)
+    $zipCtor = [System.IO.Compression.ZipArchive].GetConstructor(
+        @([System.IO.Stream], [System.IO.Compression.ZipArchiveMode])
+    )
+    $zip = $zipCtor.Invoke(@($fs, [System.IO.Compression.ZipArchiveMode]::Read))
     
     try {
         $subfolder = Split-Path -Path $targetPrefix -Leaf
