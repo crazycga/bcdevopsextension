@@ -94,6 +94,11 @@ function Get-VSIXCompilerVersion {
     $downloadUrl = "https://$($publisher).gallery.vsassets.io/_apis/public/gallery/publisher/$($publisher)/extension/$($extension)/$($getVersion)/assetbyname/Microsoft.VisualStudio.Services.VSIXPackage"
     Write-Host "Acquisition: $downloadUrl"
 
+    if (-not (Test-Path -Path $DownloadDirectory)) {
+        New-Item -ItemType Directory -Name $DownloadDirectory
+        Write-Host "Creating directory: $DownloadDirectory"
+    }
+
     $target = Join-Path -Path $DownloadDirectory -ChildPath "compiler.vsix"
     Write-Host "Download target: $target"
 
