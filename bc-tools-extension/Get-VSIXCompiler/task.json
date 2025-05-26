@@ -20,6 +20,14 @@
         "defaultValue": "$(Build.ArtifactStagingDirectory)",
         "required": true,
         "helpMarkDown": "The download folder of the compiler.  Default: $(Build.ArtifactStagingDirectory)"
+    },
+    {
+      "name": "Version",
+      "type": "string",
+      "label": "Target Version",
+      "defaultValue": "($Build.ArtifactStagingDirectory)/expanded",
+      "required": true,
+      "helpMarkDown": "This is the top level folder name for the expanded compiler.  Default: $(Build.ArtifactStagingDirectory)/expanded"
     }    
   ],
   "execution": {
