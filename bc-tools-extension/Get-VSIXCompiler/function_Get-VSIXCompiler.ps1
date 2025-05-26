@@ -118,9 +118,12 @@ function Get-VSIXCompilerVersion {
 
     $expandFolder = "expanded"
 
-    Expand-Folder -FileName $newPath -ExtractFolder "extension/bin/$platform" -TopExtractedFolder $expandFolder
-
-    Expand-Folder -FileName $newPath -ExtractFolder "extension/bin/Analyzers" -TopExtractedFolder $expandFolder
+    try {
+        Expand-Archive -Path $FileName -DestinationPath $extractionPath -Force
+    } catch {
+        Write-Error "Expand-Archive failed: $($_.Exception.Message)"
+        exit 1
+    }
 
     # Step 5: Finish
     $expectedEnvPath = if ($PSVersionTable.PSEdition -eq 'Core' -and $env:OS -like '*Windows*') {
@@ -143,14 +146,20 @@ function Get-VSIXCompilerVersion {
         "alc"
     }
 
+    $ALEXEPath = Join-Path -Path $expandFolder -ChildPath (Join-Path -Path "extension" -ChildPath (Join-Path -Path "bin" -ChildPath (Join-Path -Path $expectedEnvPath -ChildPath $expectedCompilerName)))
 
-    $ALEXEPath = Join-Path -Path $expandFolder -ChildPath (Join-Path -Path $expectedEnvPath -ChildPath $expectedCompilerName)
-
-    Write-Host "Routine complete; ALC[.EXE] should be located at $ALEXEPath"
-    Write-Host "Returning ALEXEPath from to function call"
-    
-    return [PSCustomObject]@{
-        ALEXEPath = $ALEXEPath
-        Version   = $getVersion
+    Write-Host "Testing destination: $ALEXEPath"
+    if (Test-Path -Path $ALEXEPath) {
+        Write-Host "Routine complete; ALC[.EXE] should be located at $ALEXEPath"
+        Write-Host "Returning ALEXEPath from to function call"
+        
+        return [PSCustomObject]@{
+            ALEXEPath = $ALEXEPath
+            Version   = $getVersion
+        }
+    } else {
+        Write-Error "'$ALEXEPath' did not resolve to a correct location.  Enumerating file system for reference:"
+        Write-Host ""
+        Get-ChildItem -Path $(Build.SourcesDirectory)\*.* -Force -Recurse | %{$_.FullName}
     }
 }
