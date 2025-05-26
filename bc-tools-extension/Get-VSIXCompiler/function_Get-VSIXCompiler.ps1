@@ -119,7 +119,7 @@ function Get-VSIXCompilerVersion {
     $expandFolder = "expanded"
 
     try {
-        Expand-Archive -Path $FileName -DestinationPath $expandFolder -Force
+        Expand-Archive -Path $newPath -DestinationPath $expandFolder -Force
     } catch {
         Write-Error "Expand-Archive failed: $($_.Exception.Message)"
         exit 1
