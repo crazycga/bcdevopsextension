@@ -3,14 +3,12 @@
 
 $localDownloadDirectory = Get-VstsInput -Name 'DownloadDirectory' -Require
 $localCompilerVersion = Get-VstsInput -Name 'Version' -Require
-$localTopLevelDirectory = Get-VstsInput -Name 'ExpansionDirectory'
 
 Write-Host "Getting AL Compiler:"
 Write-Host ("  {0,-20} = {1}" -f "DownloadDirectory", $localDownloadDirectory)
 Write-Host ("  {0,-20} = {1}" -f "Version", $localCompilerVersion)
-Write-Host ("  {0,-20} = {1}" -f "ExpansionDirectory", $localTopLevelDirectory)
 
-$vsixResult = Get-VSIXCompilerVersion -DownloadDirectory $localDownloadDirectory -Version $localCompilerVersion -TopExtractedFolder $localTopLevelDirectory
+$vsixResult = Get-VSIXCompilerVersion -DownloadDirectory $localDownloadDirectory -Version $localCompilerVersion
 
 if (-not $vsixResult -or `
     [string]::IsNullOrWhiteSpace($vsixResult.Version) -or `
