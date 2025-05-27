@@ -56,6 +56,19 @@ function Build-ALPackage {
             Write-Host "Confirmed existence of ALC[.EXE] at $ALEXEPath"
             $alcReference = $ALEXEPath
             Write-Host "alcReference: $alcReference"
+
+            $expectedEnvPath = if ($PSVersionTable.PSEdition -eq 'Core' -and $env:OS -like '*Windows*') {
+                Write-Host "Changing execution flag on $alcReference"
+                icacls $alcReference /grant Everyone:RX | Out-Null
+            }
+            elseif ([System.Runtime.InteropServices.RuntimeInformation]::IsOSPlatform([System.Runtime.InteropServices.OSPlatform]::Windows)) {
+                Write-Host "Changing execution flag on $alcReference"
+                icacls $alcReference /grant Everyone:RX | Out-Null
+            }
+            elseif ([System.Runtime.InteropServices.RuntimeInformation]::IsOSPlatform([System.Runtime.InteropServices.OSPlatform]::Linux)) {
+                Write-Host "Changing execution flag on $alcReference"
+                chmod +x $alcReference
+            }            
         } else {
             Write-Error "Not sure what $ALEXEPath has, but the leaf is not (apparenlty) the compiler:"
             Write-Error "ALEXEPath: $ALEXEPath"
@@ -95,7 +108,7 @@ function Build-ALPackage {
 
     $OutputFile = Join-Path -Path $OutputDirectory -ChildPath $EntireAppName
 
-    & $alcReference /project:"$BaseProjectDirectory" /out:"$OutputFile" /packagecachepath:"$PackagesDirectory"
+    & "$alcReference" /project:"$BaseProjectDirectory" /out:"$OutputFile" /packagecachepath:"$PackagesDirectory"
 
     if ($LASTEXITCODE -ne 0) {
         throw "ALC compilation failed with exist code $LASTEXITCODE"
