@@ -46,12 +46,6 @@ function Build-ALPackage {
         [String]$ALEXEPath
     )
 
-    if (-not (Test-Path -Path $alcReference)){
-        throw "ALC[.EXE] not found in $alcPath"
-    } else {
-        Write-Host "Found ALC[.EXE] at $alcPath"
-    }
-
     if (-not (Test-Path -Path $PackagesDirectory)) {
         throw "Cannot find packages directory: $PackagesDirectory"
     } else {
