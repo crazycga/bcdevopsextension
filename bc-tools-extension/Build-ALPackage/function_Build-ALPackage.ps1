@@ -46,6 +46,23 @@ function Build-ALPackage {
         [String]$ALEXEPath
     )
 
+    function ConvertFrom-DevopsPath {
+        param([Parameter(Mandatory)][string]$Path)
+        if ($PSVersionTable.PSEdition -eq 'Core' -and $env:OS -like '*Windows*') {
+            return [System.IO.Path]::GetFullPath($Path.Replace('/', '\'))
+        } elseif ([System.Runtime.InteropServices.RuntimeInformation]::IsOSPlatform([System.Runtime.InteropServices.OSPlatform]::Windows)) {
+            return [System.IO.Path]::GetFullPath($Path.Replace('/', '\'))
+        } elseif ([System.Runtime.InteropServices.RuntimeInformation]::IsOSPlatform([System.Runtime.InteropServices.OSPlatform]::Linux)) {
+            return [System.IO.Path]::GetFullPath($Path)
+        } else {
+            return $null
+        }
+    }
+
+    Write-Host "Normalizing: $ALEXEPath"
+    $ALEXEPath = ConvertFrom-DevopsPath -Path $ALEXEPath
+    Write-Host "Normalized: $ALEXEPath"
+
     if (Test-Path -Path $ALEXEPath) {
         $checkRef = Split-Path -Path $ALEXEPath -Leaf
         if ($checkRef -eq "alc.exe" -or $checkRef -eq "alc") {
