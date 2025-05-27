@@ -137,7 +137,7 @@ function Get-VSIXCompilerVersion {
     Write-Host "SHA256 [old]: $originalHash.Hash"
 
     $bytes = Get-Content -Path $newPath -Encoding Byte -TotalCount 4
-    if ($bytes[0] -eq 0x50 -and $bytes[1] -eq 0x48) {
+    if ($bytes[0] -eq 0x50 -and $bytes[1] -eq 0x4B) {
         Write-Host "The file header adheres to a PK file header"
     } else {
         throw "The resulting file at $newPath does not appear to have a PK header"
