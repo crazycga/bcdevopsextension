@@ -106,27 +106,35 @@ function Get-VSIXCompilerVersion {
         Invoke-WebRequest -Uri $downloadUrl -OutFile $target -UseBasicParsing
         Write-Host "Downloaded file: $target"
         $originalHash = Get-FileHash -Path $target -Algorithm SHA256
-        Write-Host "SHA256: $originalHash"
+        Write-Host "SHA256: $originalHash.Hash"
     }
 
     # Step 3: Rename file because Azure Pipelines' version of Expand-Archive is a little b****
     $newFileName = "compiler.zip"
     $newPath = Join-Path -Path (Split-Path $target) -ChildPath $newFileName
     Rename-Item -Path $target -NewName $newPath -Force
-
+    
     Write-Host "Renamed '$target' to '$newFileName' for unzipping"
+    
+    if (-not (Test-Path -Path $newPath)) {
+        Write-Host "Hey!  compiler.zip rename didn't work; I'll try copying it instead"
+        Copy-Item -Path $target -Destination $newPath -Force
+        Write-Host "I just copied from $target to $newPath"
+    } else {
+        Write-Host "Just confirmed there is a path (file) at $newPath"
+    }
 
     Write-Host "########################################################################################################################################"
     Write-Host "Checking on .zip file status of file '$newPath'"
     Write-Host "########################################################################################################################################"
     Write-Host ""
 
-    $fileSize = (Get-Item -Path $$newPath).Length
+    $fileSize = (Get-Item -Path $newPath).Length
     Write-Host "File size: $fileSize bytes"
 
     $fileHash = Get-FileHash -Path $newPath -Algorithm SHA256
-    Write-Host "SHA256 [new]: $fileHash"
-    Write-Host "SHA256 [old]: $originalHash"
+    Write-Host "SHA256 [new]: $fileHash.Hash"
+    Write-Host "SHA256 [old]: $originalHash.Hash"
 
     $bytes = Get-Content -Path $newPath -Encoding Byte -TotalCount 4
     if ($bytes[0] -eq 0x50 -and $bytes[1] -eq 0x48) {
