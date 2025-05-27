@@ -111,8 +111,22 @@ function Get-VSIXCompilerVersion {
     $newFileName = "compiler.zip"
     $newPath = Join-Path -Path (Split-Path $target) -ChildPath $newFileName
     Rename-Item -Path $target -NewName $newPath -Force
-    
+
     Write-Host "Renamed '$target' to '$newFileName' for unzipping"
+
+    Write-Host "########################################################################################################################################"
+    Write-Host "Checking on .zip file status of flie '$newPath'"
+    Write-Host "########################################################################################################################################"
+    Write-Host ""
+
+    $stream = [System.IO.File]::OpenRead($newPath)
+    $reader = [System.IO.Compression.ZipArchive]::new($stream, [System.IO.Compression.ZipArchiveMode]::Read)
+    $reader.Entries | ForEach-Object { $_.FullName }
+    $reader.Dispose()
+    $stream.Dispose()
+
+    Write-Host ""
+    Write-Host "########################################################################################################################################"
 
     $expandFolder = Join-Path -Path $DownloadDirectory -ChildPath "expanded"
 
@@ -154,6 +168,7 @@ function Get-VSIXCompilerVersion {
 
     Write-Host "########################################################################################################################################"
     Write-Host "Enumerating filesystem from '$expandFolder'"
+    Write-Host "File size: $((Get-Item $newPath).Length)"
     Write-Host "########################################################################################################################################"
     Write-Host ""
     Get-ChildItem -Path "$expandFolder" -Force -Recurse | %{$_.FullName}
