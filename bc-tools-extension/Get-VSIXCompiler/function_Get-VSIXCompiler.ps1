@@ -105,6 +105,8 @@ function Get-VSIXCompilerVersion {
     if (-not $DebugMode) {
         Invoke-WebRequest -Uri $downloadUrl -OutFile $target -UseBasicParsing
         Write-Host "Downloaded file: $target"
+        $originalHash = Get-FileHash -Path $target -Algorithm SHA256
+        Write-Host "SHA256: $originalHash"
     }
 
     # Step 3: Rename file because Azure Pipelines' version of Expand-Archive is a little b****
@@ -115,15 +117,23 @@ function Get-VSIXCompilerVersion {
     Write-Host "Renamed '$target' to '$newFileName' for unzipping"
 
     Write-Host "########################################################################################################################################"
-    Write-Host "Checking on .zip file status of flie '$newPath'"
+    Write-Host "Checking on .zip file status of file '$newPath'"
     Write-Host "########################################################################################################################################"
     Write-Host ""
 
-    $stream = [System.IO.File]::OpenRead($newPath)
-    $reader = [System.IO.Compression.ZipArchive]::new($stream, [System.IO.Compression.ZipArchiveMode]::Read)
-    $reader.Entries | ForEach-Object { $_.FullName }
-    $reader.Dispose()
-    $stream.Dispose()
+    $fileSize = (Get-Item -Path $$newPath).Length
+    Write-Host "File size: $fileSize bytes"
+
+    $fileHash = Get-FileHash -Path $newPath -Algorithm SHA256
+    Write-Host "SHA256 [new]: $fileHash"
+    Write-Host "SHA256 [old]: $originalHash"
+
+    $bytes = Get-Content -Path $newPath -Encoding Byte -TotalCount 4
+    if ($bytes[0] -eq 0x50 -and $bytes[1] -eq 0x48) {
+        Write-Host "The file header adheres to a PK file header"
+    } else {
+        throw "The resulting file at $newPath does not appear to have a PK header"
+    }
 
     Write-Host ""
     Write-Host "########################################################################################################################################"
