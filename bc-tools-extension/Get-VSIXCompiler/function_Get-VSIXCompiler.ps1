@@ -117,7 +117,7 @@ function Get-VSIXCompilerVersion {
     $expandFolder = Join-Path -Path $DownloadDirectory -ChildPath "expanded"
 
     if (-not (Test-Path -Path $expandFolder)) {
-        Create-Item -ItemType Directory -Path $expandFolder
+        New-Item -ItemType Directory -Path $expandFolder
         Write-Host "Created folder '$expandFolder'"
     }
 
