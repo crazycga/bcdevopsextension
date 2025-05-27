@@ -51,12 +51,17 @@ function Build-ALPackage {
         if ($checkRef -eq "alc.exe" -or $checkRef -eq "alc") {
             Write-Host "Confirmed existence of ALC[.EXE] at $ALEXEPath"
             $alcReference = $ALEXEPath
+            Write-Host "alcReference: $alcReference"
         } else {
             Write-Error "Not sure what $ALEXEPath has, but the leaf is not (apparenlty) the compiler:"
             Write-Error "ALEXEPath: $ALEXEPath"
             Write-Error "Leaf: $checkRef"
             exit 1
         }
+    } else {
+        Write-Error "Having a problem with ALC[.EXE] location.  Received '$ALEXEPath' but can't parse where the compiler is.  Enumerating file system:"
+        Get-ChildItem -Path $(Build.SourcesDirectory)\*.* -Force -Recurse | %{$_.FullName}
+        exit 1
     }
 
     if (-not (Test-Path -Path $PackagesDirectory)) {
