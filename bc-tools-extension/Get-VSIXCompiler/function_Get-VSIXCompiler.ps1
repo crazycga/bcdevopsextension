@@ -103,7 +103,7 @@ function Get-VSIXCompilerVersion {
     Write-Host "Download target: $target"
 
     if (-not $DebugMode) {
-        Invoke-RestMethod -Uri $downloadUrl -Method Get -ContentType "application/json" -OutFile $target
+        Invoke-WebRequest -Uri $downloadUrl -OutFile $target -UseBasicParsing
         Write-Host "Downloaded file: $target"
     }
 
@@ -114,16 +114,19 @@ function Get-VSIXCompilerVersion {
     
     Write-Host "Renamed '$target' to '$newFileName' for unzipping"
 
-    Write-Host "Extracting folder for '$platform' environment from VSIX"
-
     $expandFolder = "expanded"
 
+    Get-Item $newPath | Format-List Name, Length, LastWriteTime
+
+    Write-Host "Extracting folder for '$platform' environment from VSIX"
     try {
         Expand-Archive -Path $newPath -DestinationPath $expandFolder -Force
     } catch {
         Write-Error "Expand-Archive failed: $($_.Exception.Message)"
         exit 1
     }
+
+
 
     # Step 5: Finish
     $expectedEnvPath = if ($PSVersionTable.PSEdition -eq 'Core' -and $env:OS -like '*Windows*') {
