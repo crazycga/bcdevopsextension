@@ -1,9 +1,9 @@
 function Get-VSIXCompilerVersion {
     param(
-        [Parameter()]
-        [String]$Version = 'latest',
-        [Parameter()]
-        [String]$DownloadDirectory = ".",
+        [Parameter(Mandatory)]
+        [String]$Version,
+        [Parameter(Mandatory)]
+        [String]$DownloadDirectory,
         [Parameter()]
         [Switch]$DebugMode
     )
@@ -115,6 +115,7 @@ function Get-VSIXCompilerVersion {
     Write-Host "Renamed '$target' to '$newFileName' for unzipping"
 
     $expandFolder = Join-Path -Path $DownloadDirectory -ChildPath "expanded"
+    Write-Host "Created folder '$expandFolder'"
 
     Write-Host "Extracting folder for '$platform' environment from VSIX to '$expandFolder'"
     try {
@@ -123,8 +124,6 @@ function Get-VSIXCompilerVersion {
         Write-Error "Expand-Archive failed: $($_.Exception.Message)"
         exit 1
     }
-
-
 
     # Step 5: Finish
     $expectedEnvPath = if ($PSVersionTable.PSEdition -eq 'Core' -and $env:OS -like '*Windows*') {

@@ -12,7 +12,6 @@ function ConvertFrom-DevopsPath {
 }
 
 . "./function_Get-VSIXCompiler.ps1"
-#. "./function_Expand-Folder.ps1"
 
 $localDownloadDirectory = Get-VstsInput -Name 'DownloadDirectory' -Require
 $localCompilerVersion = Get-VstsInput -Name 'Version' -Require
