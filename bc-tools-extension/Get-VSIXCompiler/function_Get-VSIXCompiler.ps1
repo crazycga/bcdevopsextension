@@ -115,7 +115,11 @@ function Get-VSIXCompilerVersion {
     Write-Host "Renamed '$target' to '$newFileName' for unzipping"
 
     $expandFolder = Join-Path -Path $DownloadDirectory -ChildPath "expanded"
-    Write-Host "Created folder '$expandFolder'"
+
+    if (-not (Test-Path -Path $expandFolder)) {
+        Create-Item -ItemType Directory -Path $expandFolder
+        Write-Host "Created folder '$expandFolder'"
+    }
 
     Write-Host "Extracting folder for '$platform' environment from VSIX to '$expandFolder'"
     try {
