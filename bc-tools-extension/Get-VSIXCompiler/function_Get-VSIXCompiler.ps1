@@ -148,6 +148,14 @@ function Get-VSIXCompilerVersion {
 
     $ALEXEPath = Join-Path -Path $expandFolder -ChildPath (Join-Path -Path "extension" -ChildPath (Join-Path -Path "bin" -ChildPath (Join-Path -Path $expectedEnvPath -ChildPath $expectedCompilerName)))
 
+    Write-Host "########################################################################################################################################"
+    Write-Host "Enumerating filesystem from '$expandFolder'"
+    Write-Host "########################################################################################################################################"
+    Write-Host ""
+    Get-ChildItem -Path "$expandFolder" -Force -Recurse | %{$_.FullName}
+    Write-Host ""
+    Write-Host "########################################################################################################################################"
+
     Write-Host "Testing destination: $ALEXEPath"
     if (Test-Path -Path $ALEXEPath) {
         Write-Host "Routine complete; ALC[.EXE] should be located at $ALEXEPath"
@@ -160,6 +168,6 @@ function Get-VSIXCompilerVersion {
     } else {
         Write-Error "'$ALEXEPath' did not resolve to a correct location.  Enumerating file system for reference:"
         Write-Host ""
-        Get-ChildItem -Path $(Build.SourcesDirectory)\*.* -Force -Recurse | %{$_.FullName}
+        Get-ChildItem -Path "$(Build.SourcesDirectory)" -Force -Recurse | %{$_.FullName}
     }
 }
