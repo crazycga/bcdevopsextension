@@ -46,6 +46,19 @@ function Build-ALPackage {
         [String]$ALEXEPath
     )
 
+    if (Test-Path -Path $ALEXEPath) {
+        $checkRef = Split-Path -Path $ALEXEPath -Leaf
+        if ($checkRef -eq "alc.exe" -or $checkRef -eq "alc") {
+            Write-Host "Confirmed existence of ALC[.EXE] at $ALEXEPath"
+            $alcReference = $ALEXEPath
+        } else {
+            Write-Error "Not sure what $ALEXEPath has, but the leaf is not (apparenlty) the compiler:"
+            Write-Error "ALEXEPath: $ALEXEPath"
+            Write-Error "Leaf: $checkRef"
+            exit 1
+        }
+    }
+
     if (-not (Test-Path -Path $PackagesDirectory)) {
         throw "Cannot find packages directory: $PackagesDirectory"
     } else {
