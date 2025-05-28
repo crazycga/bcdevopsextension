@@ -1,6 +1,57 @@
 # Release Notes - BCBuildTasks Extension
 
-## Version: 0.1.0
+- [Version: 0.1.4](#version-014)
+    + [Improvement Release](#improvement-release)
+  * [New Features](#new-features)
+    + [1. **EGGetALCompiler**](#1-eggetalcompiler)
+    + [2. **EGGetALDependencies**](#2-eggetaldependencies)
+    + [3. **EGBuildALPackage**](#3-egbuildalpackage)
+  * [Notes & Requirements](#notes--requirements)
+- [Version: 0.1.0](#version-010)
+    + [Initial Release](#initial-release)
+  * [New Features](#new-features-1)
+    + [1. **EGGetALCompiler**](#1-eggetalcompiler-1)
+    + [2. **EGGetALDependencies**](#2-eggetaldependencies-1)
+    + [3. **EGBuildALPackage**](#3-egbuildalpackage-1)
+  * [Notes & Requirements](#notes--requirements-1)
+  * [Example Pipeline Usage](#example-pipeline-usage)
+  * [Known Limitations](#known-limitations)
+  * [Support](#support)
+  
+# Version: 0.1.4
+
+**Release Date:** 2025-05-27
+
+---
+
+### Improvement Release
+
+The 0.1.4 version of this release made some background wiring changes that allow for specific version targeting when getting the compiler, and some improvements in logging.  
+
+---
+
+## New Features
+
+### 1. **EGGetALCompiler**
+
+* Allows for selective version download of AL compiler from Visual Studio Marketplace
+* Expanded logging for diagnostic purposes
+
+### 2. **EGGetALDependencies**
+
+* Expanded logging for diagnostic purposes
+
+### 3. **EGBuildALPackage**
+
+* Expanded logging for diagnostic purposes
+
+## Notes & Requirements
+
+* All tasks are **PowerShell3-based** and rely on **VstsTaskSdk**
+* Tasks must run on **Windows agents only** (not cross-platform)
+* I have plans to migrate to an agent platform agnostic routine, but it requires a great deal of refactoring
+
+# Version: 0.1.0
 
 **Release Date:** 2025-05-22
 
