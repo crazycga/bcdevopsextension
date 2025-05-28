@@ -1,6 +1,21 @@
 <!-- 02c03923-c68c-4d9f-8779-4d81eb807bc9 -->
 # Business Central Build Tasks for Azure DevOps
 
+  * [Overview](#overview)
+  * [Features](#features)
+  * [Installation](#installation)
+  * [Other Requirements](#other-requirements)
+    + [Azure AD App Registration](#azure-ad-app-registration)
+    + [Business Central Configuration](#business-central-configuration)
+    + [Setup Complete](#setup-complete)
+  * [Tasks Included](#tasks-included)
+    + [1. Get AL Compiler (`EGGetALCompiler`)](#1-get-al-compiler-eggetalcompiler)
+    + [2. Get AL Dependencies (`Get-BCDependencies`)](#2-get-al-dependencies-get-bcdependencies)
+    + [3. Build AL Package (`EGALBuildPackage`)](#3-build-al-package-egalbuildpackage)
+  * [Example Pipeline](#example-pipeline)
+  * [Security & Trust](#security--trust)
+  * [Support](#support)
+
 ## Overview
 
 **WINDOWS AGENTS ONLY**
@@ -136,6 +151,7 @@ You want to provide this user with the out-of-the-box permission set `EXTEN. MGT
 |Type|Name|Required|Default|Use|
 |---|---|---|---|---|
 |Input|`DownloadDirectory`|x|`$(Build.ArtifactStagingDirectory)`|The destination of the compiler; will expand into a folder called `expanded`|
+|Input|`TargetVersion`| |`latest`|Use a **full** specific version if you need it, i.e. `16.0.1463980`, or to get the latest version, ignore this or put `latest`|
 |Output|`alVersion`||string|The version number of the extracted compiler|
 |Output|`alPath`||string|The path to the `expanded\extension\bin` folder that contains `win32\alc.exe`; used in later steps|
 
@@ -143,7 +159,7 @@ You want to provide this user with the out-of-the-box permission set `EXTEN. MGT
 
 If not using the `alVersion` variable from above, the system places the expanded archive in the `$(DownloadDirectory)\expanded\extension\bin` folder.  (Technically it then goes one level lower, to the `win32` folder.)
 
-### 2. Get AL Dependencies (`Get-BCDependencies`)
+### 2. Get AL Dependencies (`EGGetALDependencies`)
 
 |Type|Name|Required|Default|Use|
 |---|---|---|---|---|
@@ -173,6 +189,7 @@ If not using the `alVersion` variable from above, the system places the expanded
   displayName: "Get AL compiler"
   inputs:
    DownloadDirectory: $(Build.SourcesDirectory)\compiler
+   Version: 'latest'
 
 - task: EGGetALDependencies@0
   displayName: "Get AL dependencies"

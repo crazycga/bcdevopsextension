@@ -20,7 +20,15 @@
         "defaultValue": "$(Build.ArtifactStagingDirectory)",
         "required": true,
         "helpMarkDown": "The download folder of the compiler.  Default: $(Build.ArtifactStagingDirectory)"
-    }    
+    },
+    {
+      "name": "Version",
+      "type": "string",
+      "label": "Target Version",
+      "defaultValue": "latest",
+      "required": true,
+      "helpMarkDown": "The exact version to download, or 'latest' to get the latest.  Default: 'latest'"
+    }
   ],
   "execution": {
     "PowerShell3": {
