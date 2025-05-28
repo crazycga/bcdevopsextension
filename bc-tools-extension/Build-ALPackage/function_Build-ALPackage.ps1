@@ -77,7 +77,7 @@ function Build-ALPackage {
         }
     } else {
         Write-Error "Having a problem with ALC[.EXE] location.  Received '$ALEXEPath' but can't parse where the compiler is.  Enumerating file system:"
-        Get-ChildItem -Path $(Build.SourcesDirectory)\*.* -Force -Recurse | %{$_.FullName}
+        Get-ChildItem -Path $expandFolder -Recurse | ForEach-Object { Write-Host $_.FullName }
         exit 1
     }
 

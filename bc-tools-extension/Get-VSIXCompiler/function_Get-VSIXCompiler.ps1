@@ -106,7 +106,7 @@ function Get-VSIXCompilerVersion {
         Invoke-WebRequest -Uri $downloadUrl -OutFile $target -UseBasicParsing
         Write-Host "Downloaded file: $target"
         $originalHash = Get-FileHash -Path $target -Algorithm SHA256
-        Write-Host "SHA256: $originalHash.Hash"
+        Write-Host "SHA256: $($originalHash.Hash)"
     }
 
     # Step 3: Rename file because Azure Pipelines' version of Expand-Archive is a little b****
@@ -133,8 +133,8 @@ function Get-VSIXCompilerVersion {
     Write-Host "File size: $fileSize bytes"
 
     $fileHash = Get-FileHash -Path $newPath -Algorithm SHA256
-    Write-Host "SHA256 [new]: $fileHash.Hash"
-    Write-Host "SHA256 [old]: $originalHash.Hash"
+    Write-Host "SHA256 [new]: $($fileHash.Hash)"
+    Write-Host "SHA256 [old]: $($originalHash.Hash)"
 
     $bytes = Get-Content -Path $newPath -Encoding Byte -TotalCount 4
     if ($bytes[0] -eq 0x50 -and $bytes[1] -eq 0x4B) {
@@ -182,20 +182,24 @@ function Get-VSIXCompilerVersion {
         "alc"
     }
 
-    $ALEXEPath = Join-Path -Path $expandFolder -ChildPath (Join-Path -Path "extension" -ChildPath (Join-Path -Path "bin" -ChildPath (Join-Path -Path $expectedEnvPath -ChildPath $expectedCompilerName)))
+    $ALEXEPath = Join-Path -Path $expandFolder -ChildPath (Join-Path -Path "extension" -ChildPath (Join-Path -Path "bin" -ChildPath $expectedEnvPath))
 
-    Write-Host "########################################################################################################################################"
-    Write-Host "Enumerating filesystem from '$expandFolder'"
-    Write-Host "File size: $((Get-Item $newPath).Length)"
-    Write-Host "########################################################################################################################################"
-    Write-Host ""
-    Get-ChildItem -Path "$expandFolder" -Force -Recurse | %{$_.FullName}
-    Write-Host ""
-    Write-Host "########################################################################################################################################"
+    $ActualALEXE = Join-Path -Path $ALEXEPath -ChildPath $expectedCompilerName
 
-    Write-Host "Testing destination: $ALEXEPath"
-    if (Test-Path -Path $ALEXEPath) {
-        Write-Host "Routine complete; ALC[.EXE] should be located at $ALEXEPath"
+    #Debug section
+    Write-Debug "########################################################################################################################################"
+    Write-Debug "Enumerating filesystem from '$expandFolder'"
+    Write-Debug "File size: $((Get-Item $newPath).Length)"
+    Write-Debug "########################################################################################################################################"
+    Write-Debug ""
+    Get-ChildItem -Path "$expandFolder" -Force -Recurse | ForEach-Object { Write-Debug $_.FullName }
+    Write-Debug ""
+    Write-Debug "########################################################################################################################################"
+
+    #/Debug section
+    Write-Host "Testing destination: $ActualALEXE"
+    if (Test-Path -Path $ActualALEXE) {
+        Write-Host "Routine complete; ALC[.EXE] should be located at $ALEXEPath, called '$expectedCompilerName'"
         Write-Host "Returning ALEXEPath from to function call"
         
         return [PSCustomObject]@{
@@ -203,8 +207,8 @@ function Get-VSIXCompilerVersion {
             Version   = $getVersion
         }
     } else {
-        Write-Error "'$ALEXEPath' did not resolve to a correct location.  Enumerating file system for reference:"
+        Write-Error "'$ActualALEXE' did not resolve to a correct location.  Enumerating file system for reference:"
         Write-Host ""
-        Get-ChildItem -Path "$(Build.SourcesDirectory)" -Force -Recurse | %{$_.FullName}
+        Get-ChildItem -Path "$(Build.SourcesDirectory)" -Force -Recurse | ForEach-Object { Write-Host $_.FullName }
     }
 }
