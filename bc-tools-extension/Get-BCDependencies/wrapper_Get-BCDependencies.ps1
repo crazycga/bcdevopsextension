@@ -30,10 +30,10 @@ $switchParams["PathToPackagesDirectory"]        = $local_PathToPackagesDirectory
 Write-Host "Getting AL Dependencies:"
 $switchParams.GetEnumerator() | ForEach-Object {
         if ($_.Key -eq "ClientSecret") {
-                Write-Host ("  {0,-20} = {1}" -f $_.Key, "Are you nuts?")            
+                Write-Host ("  {0,-30} = {1}" -f $_.Key, "Are you nuts?")            
         }
         else {
-                Write-Host ("  {0,-20} = {1}" -f $_.Key, $_.Value)
+                Write-Host ("  {0,-30} = {1}" -f $_.Key, $_.Value)
         }
 }
 

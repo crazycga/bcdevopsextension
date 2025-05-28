@@ -1,110 +1,214 @@
-<#
-.SYNOPSIS
-    [WINDOWS ONLY] This function is used to collect the latest version of the ms-dynamics-smb.al package from the Visual Studio Marketplace, decompress it, 
-    and return the directory reference
-.DESCRIPTION
-    [WINDOWS ONLY]
-    The function goes out to the web and collects the version information from the web, then subsequently uses that information to download the actual copy of 
-    the .VSIX file from the marketplace API.  It then renames the file as a .zip file, and extracts it to a directory, then provides the directory and version
-    as a response.  This is a Windows only routine, as it relies upon DOM to parse the response on the first query (as though it were a user.)  This is
-    required because the actual website responds with a series of JS and other reactive components, and ms-dynamics-smb.al is not listed in the marketplace
-    query API.
-.PARAMETER DownloadDirectory
-    The directory in which to stage the artifacts that are being downloaded; the routine will automatically place the decompiled result in this directory with
-    a subdirectory of "/expanded"
-.OUTPUTS
-    PSCustomObject containing ALEXEPath (the path to the decompiled file) and Version (the version of the decompiled file)
-.NOTES
-    SEE DESCRIPTION FOR WINDOWS ONLY REQUIREMENT
-    Author  : James McCullough
-    Company : Evergrowth Consulting
-    Version : 1.0.0
-    Created : 2025-05-21
-    Purpose : DevOps-compatible AL extension download and decompression
-#>
-function Get-VSIXCompiler {
+function Get-VSIXCompilerVersion {
     param(
         [Parameter(Mandatory)]
-        [String]$DownloadDirectory
+        [String]$Version,
+        [Parameter(Mandatory)]
+        [String]$DownloadDirectory,
+        [Parameter()]
+        [Switch]$DebugMode
     )
 
-    if (-not (Test-Path -Path $downloadDirectory)) {
-        New-Item -ItemType Directory -Path $DownloadDirectory
-    }
-
-    # Initialize variables
-    $coreUrl = "https://marketplace.visualstudio.com/items?itemName=ms-dynamics-smb.al"
-    $downloadUrlPrototype = "https://marketplace.visualstudio.com/_apis/public/gallery/publishers/ms-dynamics-smb/vsextensions/al/%VERSION%/vspackage"
-
     [Net.ServicePointManager]::SecurityProtocol = [Net.SecurityProtocolType]::Tls12
-
-    $targetPackageDirectory = $downloadDirectory
-    $targetExpansionSubdirectory = Join-Path -Path $targetPackageDirectory -ChildPath "expanded"
-
     $ProgressPreference = 'SilentlyContinue'
 
-    # Step 1: Get version information and session cookie
+    Write-Host "Determining platform"
+    if ($PSVersionTable.PSEdition -eq 'Core' -and $env:OS -like '*Windows*') {
+        $platform = "win32"
+    }
+    elseif ([System.Runtime.InteropServices.RuntimeInformation]::IsOSPlatform([System.Runtime.InteropServices.OSPlatform]::Windows)) {
+        $platform = "win32"
+    }
+    elseif ([System.Runtime.InteropServices.RuntimeInformation]::IsOSPlatform([System.Runtime.InteropServices.OSPlatform]::Linux)) {
+        $platform = "linux"
+    }
+    else {
+        Write-Error "Unsupported platform: $([System.Runtime.InteropServices.RuntimeInformation]::OSDescription)"
+        exit 1
+    }
+    
+    Write-Host "Detected platform: $platform"
+    
+    $apiUrl = "https://marketplace.visualstudio.com/_apis/public/gallery/extensionquery"
+    
+    Write-Host "Contacting '$apiUrl'"
+
+    $jsonRawPrototype = [ordered]@{
+        filters    = @(
+            @{
+                criteria   = @(
+                    @{
+                        filterType = 7
+                        value      = 'ms-dynamics-smb.al'
+                    }
+                )
+                pageNumber = 1
+                pageSize   = 100
+                sortBy     = 0
+                sortOrder  = 0
+            }
+        )
+        assetTypes = @()
+        flags      = 129
+    } | ConvertTo-Json -Depth 10
+
     try {
-        $webrequest = Invoke-WebRequest -Uri $coreUrl -SessionVariable websession
-
-        $HTML = New-Object -Com "HTMLFile"
-        [string]$htmlBody = $webrequest.Content
-        $HTML.Write([ref]$htmlBody)
-
+        $headers = @{"Accept" = "application/json; charset=utf-8;api-version=7.2-preview.1" }
+        $restResult = Invoke-RestMethod -Uri $apiUrl -Method Post -Body $jsonRawPrototype -ContentType "application/json" -Headers $headers
     }
     catch {
-        Write-Host "An error occurred during the attempt to resolve the latest version: $($_.Exception.Message)"
-        throw
+        Write-Error "An error occurred: $($_.Exception.Message)"
+        exit 1
     }
 
-    $VSIXRefs = $HTML.scripts | Where-Object className -eq "jiContent" | Select-Object -ExpandProperty innerHTML | ConvertFrom-Json
-
-    if (-not $VSIXRefs -or -not $VSIXRefs.Resources) {
-        Write-Host "Was unable to resolve the VSIX references required; exiting with error"
-        throw "Unable to resolve VSIX references"
+    if (-not $restResult) {
+        Write-Error "Something went wrong, didn't get a proper response from the API"
+        exit 1
     }
 
-    Write-Host "Found VSIX reference for $($VSIXRefs.Resources.ExtensionName) with a version number $($VSIXRefs.Resources.Version)"
+    Write-Host "Received response from the API with $($restResult.results[0].extensions[0].versions.Count) versions coming back"
 
-    $downloadUrl = $downloadUrlPrototype.Replace("%VERSION%", $VSIXRefs.Resources.Version)
-    Write-Host "Downloading from $downloadUrl"
-
-    # Step 2: Attempt to download the target file
-    try {
-    $response = Invoke-WebRequest -Uri $downloadurl -WebSession $websession
+    $publisher = $restResult.results[0].extensions[0].publisher.publisherName
+    $extension = $restResult.results[0].extensions[0].ExtensionName
+    
+    if ($Version -eq 'latest') {
+        $getVersion = $restResult.results[0].extensions[0].versions[0].version
     }
-    catch {
-        Write-Host "An error occurred trying to download the actual package from $downloadUrl"
-        Write-Host "The error: $($_.Exception.Message)"
-        throw
+    else {
+        $versions = $restResult.results[0].extensions[0].versions
+        $versionExists = $versions.version -contains $Version
+        if ($versionExists) {
+            $getVersion = $Version
+        }
+        else {
+            Write-Error "Version $Version was not found in the list of versions; please check your version number or try 'latest'"
+            exit 1
+        }
     }
 
-    $responseHeaderCD = $response.Headers['Content-Disposition']
-    $disposition = [System.Net.Mime.ContentDisposition]::new($responseHeaderCD)
-    $dispositionFilePath = Join-Path -Path $targetPackageDirectory -ChildPath $disposition.FileName
-    [IO.File]::WriteAllBytes($dispositionFilePath, $response.Content)
+    Write-Host "Acquiring compiler with the following metadata:"
+    Write-Host ("  {0,-20} = {1}" -f "publisher", $publisher)
+    Write-Host ("  {0,-20} = {1}" -f "extension", $extension)
+    Write-Host ("  {0,-20} = {1}" -f "version", $version)
+    Write-Host ""
+    
+    $downloadUrl = "https://$($publisher).gallery.vsassets.io/_apis/public/gallery/publisher/$($publisher)/extension/$($extension)/$($getVersion)/assetbyname/Microsoft.VisualStudio.Services.VSIXPackage"
+    Write-Host "Acquisition: $downloadUrl"
 
-    Write-Host "Downloaded $($disposition.FileName): $($response.RawContentLength) bytes"
+    if (-not (Test-Path -Path $DownloadDirectory)) {
+        New-Item -ItemType Directory -Path $DownloadDirectory
+        Write-Host "Creating directory: $DownloadDirectory"
+    }
+
+    $target = Join-Path -Path $DownloadDirectory -ChildPath "compiler.vsix"
+    Write-Host "Download target: $target"
+
+    if (-not $DebugMode) {
+        Invoke-WebRequest -Uri $downloadUrl -OutFile $target -UseBasicParsing
+        Write-Host "Downloaded file: $target"
+        $originalHash = Get-FileHash -Path $target -Algorithm SHA256
+        Write-Host "SHA256: $($originalHash.Hash)"
+    }
 
     # Step 3: Rename file because Azure Pipelines' version of Expand-Archive is a little b****
-    $newFileName = "$($disposition.FileName).zip"
-    Rename-Item -Path $dispositionFilePath -NewName $newFileName -Force
-    $dispositionFilePath = $dispositionFilePath + ".zip"
+    $newFileName = "compiler.zip"
+    $newPath = Join-Path -Path (Split-Path $target) -ChildPath $newFileName
+    Rename-Item -Path $target -NewName $newPath -Force
+    
+    Write-Host "Renamed '$target' to '$newFileName' for unzipping"
+    
+    if (-not (Test-Path -Path $newPath)) {
+        Write-Host "Hey!  compiler.zip rename didn't work; I'll try copying it instead"
+        Copy-Item -Path $target -Destination $newPath -Force
+        Write-Host "I just copied from $target to $newPath"
+    } else {
+        Write-Host "Just confirmed there is a path (file) at $newPath"
+    }
 
-    # Step 4: Expand .vsix file to file system to extract ALC.EXE
-    $downloadedFile = $dispositionFilePath
-    $expansionPath = $targetExpansionSubdirectory
-    New-Item -ItemType Directory -Path $expansionPath -Force | Out-Null
+    Write-Host "########################################################################################################################################"
+    Write-Host "Checking on .zip file status of file '$newPath'"
+    Write-Host "########################################################################################################################################"
+    Write-Host ""
 
-    Expand-Archive -Path $downloadedFile -DestinationPath $expansionPath -Force
+    $fileSize = (Get-Item -Path $newPath).Length
+    Write-Host "File size: $fileSize bytes"
+
+    $fileHash = Get-FileHash -Path $newPath -Algorithm SHA256
+    Write-Host "SHA256 [new]: $($fileHash.Hash)"
+    Write-Host "SHA256 [old]: $($originalHash.Hash)"
+
+    $bytes = Get-Content -Path $newPath -Encoding Byte -TotalCount 4
+    if ($bytes[0] -eq 0x50 -and $bytes[1] -eq 0x4B) {
+        Write-Host "The file header adheres to a PK file header"
+    } else {
+        throw "The resulting file at $newPath does not appear to have a PK header"
+    }
+
+    Write-Host ""
+    Write-Host "########################################################################################################################################"
+
+    $expandFolder = Join-Path -Path $DownloadDirectory -ChildPath "expanded"
+
+    if (-not (Test-Path -Path $expandFolder)) {
+        New-Item -ItemType Directory -Path $expandFolder
+        Write-Host "Created folder '$expandFolder'"
+    }
+
+    Write-Host "Extracting folder for '$platform' environment from VSIX to '$expandFolder'"
+    try {
+        Expand-Archive -Path $newPath -DestinationPath $expandFolder -Force
+    } catch {
+        Write-Error "Expand-Archive failed: $($_.Exception.Message)"
+        exit 1
+    }
 
     # Step 5: Finish
-    $ALEXEPath = Join-Path -Path $expansionPath -ChildPath (Join-Path -Path "extension" -ChildPath "bin")
-    Write-Host "Routine complete; ALC.EXE should be located at $ALEXEPath"
-    Write-Host "Returning ALEXEPath from to function call"
-    
-    return [PSCustomObject]@{
-        ALEXEPath = $ALEXEPath
-        Version   = $VSIXRefs.Resources.Version
+    $expectedEnvPath = if ($PSVersionTable.PSEdition -eq 'Core' -and $env:OS -like '*Windows*') {
+        "win32"
+    }
+    elseif ([System.Runtime.InteropServices.RuntimeInformation]::IsOSPlatform([System.Runtime.InteropServices.OSPlatform]::Windows)) {
+        "win32"
+    }
+    elseif ([System.Runtime.InteropServices.RuntimeInformation]::IsOSPlatform([System.Runtime.InteropServices.OSPlatform]::Linux)) {
+        "linux"
+    }
+
+    $expectedCompilerName = if ($PSVersionTable.PSEdition -eq 'Core' -and $env:OS -like '*Windows*') {
+        "alc.exe"
+    }
+    elseif ([System.Runtime.InteropServices.RuntimeInformation]::IsOSPlatform([System.Runtime.InteropServices.OSPlatform]::Windows)) {
+        "alc.exe"
+    }
+    elseif ([System.Runtime.InteropServices.RuntimeInformation]::IsOSPlatform([System.Runtime.InteropServices.OSPlatform]::Linux)) {
+        "alc"
+    }
+
+    $ALEXEPath = Join-Path -Path $expandFolder -ChildPath (Join-Path -Path "extension" -ChildPath (Join-Path -Path "bin" -ChildPath $expectedEnvPath))
+
+    $ActualALEXE = Join-Path -Path $ALEXEPath -ChildPath $expectedCompilerName
+
+    #Debug section
+    Write-Debug "########################################################################################################################################"
+    Write-Debug "Enumerating filesystem from '$expandFolder'"
+    Write-Debug "File size: $((Get-Item $newPath).Length)"
+    Write-Debug "########################################################################################################################################"
+    Write-Debug ""
+    Get-ChildItem -Path "$expandFolder" -Force -Recurse | ForEach-Object { Write-Debug $_.FullName }
+    Write-Debug ""
+    Write-Debug "########################################################################################################################################"
+
+    #/Debug section
+    Write-Host "Testing destination: $ActualALEXE"
+    if (Test-Path -Path $ActualALEXE) {
+        Write-Host "Routine complete; ALC[.EXE] should be located at $ALEXEPath, called '$expectedCompilerName'"
+        Write-Host "Returning ALEXEPath from to function call"
+        
+        return [PSCustomObject]@{
+            ALEXEPath = $ALEXEPath
+            Version   = $getVersion
+        }
+    } else {
+        Write-Error "'$ActualALEXE' did not resolve to a correct location.  Enumerating file system for reference:"
+        Write-Host ""
+        Get-ChildItem -Path "$(Build.SourcesDirectory)" -Force -Recurse | ForEach-Object { Write-Host $_.FullName }
     }
 }

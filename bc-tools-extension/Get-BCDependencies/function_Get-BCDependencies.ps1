@@ -101,6 +101,13 @@ function Get-BCDependencies {
 
     Write-Verbose "converted app.json; confirming now"
 
+    Write-Host "Found the following before validation routine:"
+    $appJsonExists = if ($appJSON) {"true"} else {"false"}
+    Write-Host ("  {0,-30} = {1}" -f "app.json exists", $appJsonExists)
+    Write-Host ("  {0,-30} = {1}" -f "app.id", $appJSON.id)
+    Write-Host ("  {0,-30} = {1}" -f "app.name", $appJSON.name)
+    Write-Host ("  {0,-30} = {1}" -f "app.publisher", $appJSON.publisher)
+
     if (-not $appJSON -or -not $appJSON.id -or -not $appJSON.name -or -not $appJSON.publisher) {
         throw "app.json found at '$appJSONFile' does not appear to be valid; exiting..."
     }
@@ -206,7 +213,17 @@ function Get-BCDependencies {
         Write-Host "Dependency $appName ($($dependency.id)) downloaded"
     }
 
-    ########################################################################################################################################
-    # Internal function here
-    ########################################################################################################################################  
+    if ($IsLinux) { 
+        Write-Host "Executing chmod to allow access for all of the extracted files"
+        chmod -R 644 $$TopExtractedFolder 
+    }
+
+    # Debug section+
+    Write-Debug "########################################################################################################################################"
+    Write-Debug "Enumerating filesystem from '$targetPackageDirectory'"
+    Write-Debug "########################################################################################################################################"
+    Write-Debug ""
+    Get-ChildItem -Path "$targetPackageDirectory" -Force -Recurse | ForEach-Object { Write-Debug $_.FullName }
+    Write-Debug ""
+    Write-Debug "########################################################################################################################################"
 }

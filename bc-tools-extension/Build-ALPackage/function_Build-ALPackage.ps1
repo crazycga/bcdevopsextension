@@ -46,18 +46,39 @@ function Build-ALPackage {
         [String]$ALEXEPath
     )
 
-    try {
-        $alcPath = Join-Path -Path $ALEXEPath -ChildPath "win32"
-        $alcReference = Join-Path -Path $alcPath -ChildPath "ALC.EXE"
-    }
-    catch {
-        throw "An error occurred; it doesn't seem that $alcPath contains a folder called 'win32', or the folder $alcPath\win32 doesn't contain ALC.EXE"
-    }
-    
-    if (-not (Test-Path -Path $alcReference)){
-        throw "ALC.EXE not found in $alcPath"
+    Write-Host "Normalizing: $ALEXEPath"
+    $ALEXEPath = [System.IO.Path]::GetFullPath($ALEXEPath)
+    Write-Host "Normalized: $ALEXEPath"
+
+    if ((Test-Path -Path $ALEXEPath) -or ([System.IO.Path]::GetFullPath($ALEXEPath))) {
+        $checkRef = Split-Path -Path $ALEXEPath -Leaf
+        if ($checkRef -eq "alc.exe" -or $checkRef -eq "alc") {
+            Write-Host "Confirmed existence of ALC[.EXE] at $ALEXEPath"
+            $alcReference = $ALEXEPath
+            Write-Host "alcReference: $alcReference"
+
+            $expectedEnvPath = if ($PSVersionTable.PSEdition -eq 'Core' -and $env:OS -like '*Windows*') {
+                Write-Host "Changing execution flag on $alcReference"
+                icacls $alcReference /grant Everyone:RX | Out-Null
+            }
+            elseif ([System.Runtime.InteropServices.RuntimeInformation]::IsOSPlatform([System.Runtime.InteropServices.OSPlatform]::Windows)) {
+                Write-Host "Changing execution flag on $alcReference"
+                icacls $alcReference /grant Everyone:RX | Out-Null
+            }
+            elseif ([System.Runtime.InteropServices.RuntimeInformation]::IsOSPlatform([System.Runtime.InteropServices.OSPlatform]::Linux)) {
+                Write-Host "Changing execution flag on $alcReference"
+                chmod +x $alcReference
+            }            
+        } else {
+            Write-Error "Not sure what $ALEXEPath has, but the leaf is not (apparenlty) the compiler:"
+            Write-Error "ALEXEPath: $ALEXEPath"
+            Write-Error "Leaf: $checkRef"
+            exit 1
+        }
     } else {
-        Write-Host "Found ALC.EXE at $alcPath"
+        Write-Error "Having a problem with ALC[.EXE] location.  Received '$ALEXEPath' but can't parse where the compiler is.  Enumerating file system:"
+        Get-ChildItem -Path $expandFolder -Recurse | ForEach-Object { Write-Host $_.FullName }
+        exit 1
     }
 
     if (-not (Test-Path -Path $PackagesDirectory)) {
@@ -87,7 +108,7 @@ function Build-ALPackage {
 
     $OutputFile = Join-Path -Path $OutputDirectory -ChildPath $EntireAppName
 
-    & $alcReference /project:"$BaseProjectDirectory" /out:"$OutputFile" /packagecachepath:"$PackagesDirectory"
+    & "$alcReference" /project:"$BaseProjectDirectory" /out:"$OutputFile" /packagecachepath:"$PackagesDirectory"
 
     if ($LASTEXITCODE -ne 0) {
         throw "ALC compilation failed with exist code $LASTEXITCODE"
