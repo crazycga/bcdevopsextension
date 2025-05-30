@@ -1,0 +1,57 @@
+{
+  "id": "0d4e6693-bdcb-47c0-a373-67a34549da07",
+  "name": "EGGetBCCompanies",
+  "friendlyName": "Get BC Companies",
+  "description": "Gets a list of the company objects in Business Central.",
+  "helpMarkDown": "Please open a GitHub issue at https://github.com/crazycga/bcdevopsextension/issues for queries or support.",
+  "category": "Build",
+  "author": "Evergrowth Consulting",
+  "version": {
+    "Major": 0,
+    "Minor": 1,
+    "Patch": 3
+  },
+  "instanceNameFormat": "Collect list of companies",
+  "inputs": [
+    {
+        "name": "TenantId",
+        "type": "string",
+        "label": "Azure Tenant Id",
+        "defaultValue": "",
+        "required": true,
+        "helpMarkDown": "The Azure tenant id of the compiling tenant."
+    },
+    {
+        "name": "EnvironmentName",
+        "type": "string",
+        "label": "BC Environment Name",
+        "defaultValue": "sandbox",
+        "required": false,
+        "helpMarkDown": "The Business Central environment name of the compiling environment."
+    },
+    {
+        "name": "ClientId",
+        "type": "string",
+        "label": "Azure Client Id",
+        "defaultValue": "",
+        "required": true,
+        "helpMarkDown": "The Azure Entra client id for the process."
+    },
+    {
+        "name": "ClientSecret",
+        "type": "string",
+        "label": "Azure Client Secret",
+        "defaultValue": "",
+        "required": true,
+        "helpMarkDown": "The Azure Entra client secret for the process."
+    }
+  ],
+  "execution": {
+    "Node16": {
+      "target": "function_Get-ListOfCompanies.js"
+    },
+    "Node20_1": {
+      "target": "function_Get-ListOfCompanies.js"
+    }
+  }
+}
