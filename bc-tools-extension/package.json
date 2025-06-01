@@ -1,5 +1,6 @@
 {
   "dependencies": {
-    "node-fetch": "^2.7.0"
+    "node-fetch": "^2.7.0",
+    "undici": "^7.10.0"
   }
 }

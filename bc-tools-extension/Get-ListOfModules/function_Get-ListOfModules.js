@@ -5,6 +5,7 @@ const clientId = process.env.INPUT_CLIENTID;
 const clientSecret = process.env.INPUT_CLIENTSECRET;
 const environmentName = process.env.INPUT_ENVIRONMENTNAME;
 const companyId = process.env.INPUT_COMPANYID;
+
 const moduleId = process.env.INPUT_MODULEID;
 const excludeMicrosoft = process.env.INPUT_EXCLUDEMICROSOFT;
 
@@ -19,15 +20,7 @@ const excludeMicrosoft = process.env.INPUT_EXCLUDEMICROSOFT;
             const id = module.id;
             console.log(`${idx + 1}. ${module.displayName} (ID: ${module.id})`);
         });
-
-        // this is the test for commonTools.confirmModule
-        // if (await commonTools.confirmModule(token, tenantId, environmentName, companyId, moduleId) === true) {
-        //     console.log("Huzzah!");
-        // } else {
-        //     console.log("Boo!");
-        // }
-    }
-    catch (error) {
+    } catch (error) {
         console.error('Error: ', error.message);
     }
 })();

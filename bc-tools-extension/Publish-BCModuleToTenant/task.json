@@ -1,0 +1,96 @@
+{
+  "id": "def7c0a0-0d00-4f62-ae3f-7f084561e721",
+  "name": "EGDeployBCModule",
+  "friendlyName": "Deploy BC module to a tenant",
+  "description": "Deploys a per-tenant extension to a tenant in Business Central.",
+  "helpMarkDown": "Please open a GitHub issue at https://github.com/crazycga/bcdevopsextension/issues for queries or support.",
+  "category": "Build",
+  "author": "Evergrowth Consulting",
+  "version": {
+    "Major": 0,
+    "Minor": 1,
+    "Patch": 3
+  },
+  "instanceNameFormat": "Deploy module to tenant",
+  "inputs": [
+    {
+        "name": "TenantId",
+        "type": "string",
+        "label": "Azure Tenant Id",
+        "defaultValue": "",
+        "required": true,
+        "helpMarkDown": "The Azure tenant id of the compiling tenant."
+    },
+    {
+        "name": "EnvironmentName",
+        "type": "string",
+        "label": "BC Environment Name",
+        "defaultValue": "sandbox",
+        "required": false,
+        "helpMarkDown": "The Business Central environment name of the compiling environment."
+    },
+    {
+        "name": "ClientId",
+        "type": "string",
+        "label": "Azure Client Id",
+        "defaultValue": "",
+        "required": true,
+        "helpMarkDown": "The Azure Entra client id for the process."
+    },
+    {
+        "name": "ClientSecret",
+        "type": "string",
+        "label": "Azure Client Secret",
+        "defaultValue": "",
+        "required": true,
+        "helpMarkDown": "The Azure Entra client secret for the process."
+    },
+    {
+      "name": "CompanyId",
+      "type": "string",
+      "label": "Company Id (a guid)",
+      "defaultValue": "",
+      "required": true,
+      "helpMarkDown": "The a company id for the (main) deployment; note that it will deploy to the WHOLE tenant."
+    },
+    {
+      "name": "AppFilePath",
+      "type": "string",
+      "label": ".app file name and path",
+      "required": true,
+      "helpMarkDown": "The file name and path to the already-compiled .app file."
+    },
+    {
+      "name": "SkipPolling",
+      "type": "boolean",
+      "label": "Skip waiting for deployment to complete; default: false",
+      "defaultValue": false,
+      "required": false,
+      "helpMarkDown": "Set to true to skip waiting for the deployment to complete; default: false."
+    },
+    {
+      "name": "PollingFrequency",
+      "type": "integer",
+      "label": "Polling frequency (in SECONDS) of API (default: 10)",
+      "defaultValue": 10,
+      "required": false,
+      "helpMarkDown": "The number of seconds between polling checks to see if the module is deployed."
+    },
+    {
+      "name": "MaxPollingTimeout",
+      "type": "integer",
+      "label": "Max. time (in SECONDS) to wait (default: 600)",
+      "defaultValue": 600,
+      "required": true,
+      "helpMarkDown": "The maximum time (in SECONDS) to wait for deployment to resolve."
+    }    
+  ],
+  "execution": {
+    "Node16": {
+      "target": "function_Publish-BCModuleToTenant.js"
+    },
+    "Node20_1": {
+      "target": "function_Publish-BCModuleToTenant.js"
+    }
+  }
+}
