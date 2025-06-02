@@ -46,6 +46,14 @@
         "helpMarkDown": "The Azure Entra client secret for the process."
     },
     {
+        "name": "CompanyId",
+        "type": "string",
+        "label": "Company Id",
+        "defaultValue": "",
+        "required": true,
+        "helpMarkDown": "A company (any company) id from the Business Central tenant; use EGGetBCCompanies to get a list of companies and ids."
+    },
+    {
       "name": "ModuleId",
       "type": "string",
       "label": "Module Id (a guid)",
