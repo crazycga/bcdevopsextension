@@ -508,5 +508,6 @@ module.exports = {
     createInstallationBookmark,
     uploadInstallationFile,
     callNavUploadCommand,
-    waitForResponse
+    waitForResponse,
+    parseBool
 }

@@ -18,7 +18,6 @@ const extremeDebugMode = commonTools.parseBool(process.env.INPUT_EXTREMEDEBUGMOD
         console.log('process.cwd():', process.cwd());        // where the process was started
         console.log('__dirname:', __dirname);                // where the current script file resides
 
-
         console.log('Enumerating parent:');
         fs.readdir('..', (err, files) => {
             if (err) {
