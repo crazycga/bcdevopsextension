@@ -73,6 +73,15 @@
 		},
 		{
 			"path": "Build-ALPackage"
+		},
+		{
+			"path": "Get-ListOfCompanies"
+		},
+		{
+			"path": "Get-ListOfModules"
+		},
+		{
+			"path": "Publish-BCModuleToTenant"
 		}
 	],
 	"contributions": [
@@ -105,6 +114,36 @@
 			"properties": {
 				"name": "Build-ALPackage"
 			}
-		}
+		},
+		{
+			"id": "Get-ListOfCompaniesTask",
+			"type": "ms.vss-distributed-task.task",
+			"targets": [
+				"ms.vss-distributed-task.tasks"
+			],
+			"properties": {
+				"name": "Get-ListOfCompanies"
+			}
+		},		
+		{
+			"id": "Get-ListOfModulesTask",
+			"type": "ms.vss-distributed-task.task",
+			"targets": [
+				"ms.vss-distributed-task.tasks"
+			],
+			"properties": {
+				"name": "Get-ListOfModules"
+			}
+		},		
+		{
+			"id": "Publish-BCModuleToTenantTask",
+			"type": "ms.vss-distributed-task.task",
+			"targets": [
+				"ms.vss-distributed-task.tasks"
+			],
+			"properties": {
+				"name": "Publish-BCModuleToTenant"
+			}
+		}		
 	]
 }
