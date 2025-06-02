@@ -44,6 +44,14 @@
         "defaultValue": "",
         "required": true,
         "helpMarkDown": "The Azure Entra client secret for the process."
+    },
+    {
+      "name": "ExtremeDebugMode",
+      "type": "boolean",
+      "label": "Extreme Debug Mode",
+      "defaultValue": false,
+      "required": false,
+      "helpMarkDown": "Undocumented extreme debugging mode used top assist in the creation of the VSIX."
     }
   ],
   "execution": {
