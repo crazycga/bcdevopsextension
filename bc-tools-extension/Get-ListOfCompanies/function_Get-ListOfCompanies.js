@@ -7,7 +7,7 @@ const tenantId = process.env.INPUT_TENANTID;
 const clientId = process.env.INPUT_CLIENTID;
 const clientSecret = process.env.INPUT_CLIENTSECRET;
 const environmentName = process.env.INPUT_ENVIRONMENTNAME;
-const extremeDebugMode = commonTools.parseBool(process.env.INPUT_EXTREMEDEBUGMODE);
+const extremeDebugMode = true; //commonTools.parseBool(process.env.INPUT_EXTREMEDEBUGMODE);
 
 (async () => {
     // extreme debug mode is specifically used to enumerate the environment in which the VSIX is installed; it is undocumented for a reason
