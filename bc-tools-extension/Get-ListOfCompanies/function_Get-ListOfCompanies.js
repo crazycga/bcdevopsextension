@@ -8,6 +8,7 @@ const clientSecret = process.env.INPUT_CLIENTSECRET;
 const environmentName = process.env.INPUT_ENVIRONMENTNAME;
 
 (async () => {
+    console.log('Enumerating parent:');
     fs.readdir('..', (err, files) => {
         if (err) {
             console.error('Error reading directory: ', err);
@@ -18,6 +19,20 @@ const environmentName = process.env.INPUT_ENVIRONMENTNAME;
             console.log(file);
         });
     });
+
+    console.log('Enumerating current:');
+    fs.readdir('.', (err, files) => {
+        if (err) {
+            console.error('Error reading directory: ', err);
+            return;
+        }
+        console.log('Files in parent directory:');
+        files.forEach(file => {
+            console.log(file);
+        });
+    });
+
+
     // try {
     //     const token = await commonTools.getToken(tenantId, clientId, clientSecret);
     //     const companies = await commonTools.getCompanies(token, tenantId, environmentName);
