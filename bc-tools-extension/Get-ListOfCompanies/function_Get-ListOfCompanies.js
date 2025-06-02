@@ -1,4 +1,5 @@
 const fs = require('fs');
+const path = require('path');
 
 //const commonTools = require('_common/CommonTools');
 
@@ -8,6 +9,10 @@ const clientSecret = process.env.INPUT_CLIENTSECRET;
 const environmentName = process.env.INPUT_ENVIRONMENTNAME;
 
 (async () => {
+    console.log('process.cwd():', process.cwd());        // where the process was started
+    console.log('__dirname:', __dirname);                // where the current script file resides
+
+
     console.log('Enumerating parent:');
     fs.readdir('..', (err, files) => {
         if (err) {
@@ -32,6 +37,28 @@ const environmentName = process.env.INPUT_ENVIRONMENTNAME;
         });
     });
 
+    let current = __dirname;
+    let depth = 5;
+    for (let i = 0; i < depth; i++) {
+        console.log(`\n📂 Contents of: ${current}`);
+        try {
+            const files = fs.readdirSync(current);
+            files.forEach(f => console.log('  -', f));
+        } catch (e) {
+            console.error(`  (Error reading ${current}: ${e.message})`);
+        }
+        current = path.resolve(current, '..');
+    }
+
+    console.log('**********************************************************');
+    const expectedPath = path.resolve(__dirname, '../_common/CommonTools.js');
+    console.log('👀 Trying to stat:', expectedPath);
+    try {
+        fs.statSync(expectedPath);
+        console.log('✅ Found commonTools at expected path');
+    } catch {
+        console.log('❌ commonTools NOT found at expected path');
+    }
 
     // try {
     //     const token = await commonTools.getToken(tenantId, clientId, clientSecret);
