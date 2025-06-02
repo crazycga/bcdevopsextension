@@ -1,3 +1,16 @@
+const fs = require('fs');
+
+fs.readdir('..', (err, files) => {
+    if (err) {
+        console.error('Error reading directory: ', err);
+        return;
+    }
+    console.log('Files in parent directory:');
+    files.forEach(file=> {
+        console.log(file);
+    });
+});
+
 const commonTools = require('_common/CommonTools');
 
 const tenantId = process.env.INPUT_TENANTID;
