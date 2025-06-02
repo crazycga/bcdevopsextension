@@ -4,7 +4,7 @@
 # copy _common to all subfolders where _common is required
 ###############################################################################################
 
-Set-Location -Path ".."
+Set-Location -Path "../bc-tools-extension"
 
 Write-Host "Current working directory: $(Get-Location)"
 
