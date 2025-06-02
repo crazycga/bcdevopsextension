@@ -82,6 +82,9 @@
 		},
 		{
 			"path": "Publish-BCModuleToTenant"
+		},
+		{
+			"path": "_common"
 		}
 	],
 	"contributions": [
