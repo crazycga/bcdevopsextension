@@ -68,6 +68,10 @@ jobs:
         shell: pwsh
         run: '_tasks/Initialize-BuildContext.ps1 -Environment $env:BUILD_TYPE -BuildNumber $env:GITHUB_RUN_NUMBER'
 
+      - name: Copy _common folder to all tasks that require it
+        shell: pwsh
+        run: '_tasks/_build.ps1'
+
       - name: Compile Azure Devops Extension
         run: tfx extension create --manifest-globs vss-extension.json
         working-directory: bc-tools-extension
