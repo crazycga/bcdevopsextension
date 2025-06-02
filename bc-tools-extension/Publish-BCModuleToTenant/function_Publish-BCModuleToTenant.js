@@ -16,7 +16,7 @@ const maxTimeout = parseInt(process.env.INPUT_MAXPOLLINGTIMEOUT);
     console.log("Calling deployment of module with the following parameters:");
     console.log(`TenantId: ${tenantId}`);
     console.log(`EnvironmentName: ${environmentName}`);
-    console.log(`ClientId: ${cleintId}`);
+    console.log(`ClientId: ${clientId}`);
     console.log(`ClientSecret: 'Yeah, right, try again'`);
     console.log(`CompanyId: ${companyId}`);
     console.log(`AppFilePath: ${filePath}`);
