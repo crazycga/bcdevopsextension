@@ -1,4 +1,4 @@
-const commonTools = require('_common/CommonTools');
+const commonTools = require(path.join(__dirname, '_common', 'CommonTools.js'));
 
 const tenantId = process.env.INPUT_TENANTID;
 const clientId = process.env.INPUT_CLIENTID;

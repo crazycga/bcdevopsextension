@@ -1,13 +1,13 @@
 const fs = require('fs');
 const path = require('path');
 
-//const commonTools = require('_common/CommonTools');
+const commonTools = require(path.join(__dirname, '_common', 'CommonTools.js'));
 
 const tenantId = process.env.INPUT_TENANTID;
 const clientId = process.env.INPUT_CLIENTID;
 const clientSecret = process.env.INPUT_CLIENTSECRET;
 const environmentName = process.env.INPUT_ENVIRONMENTNAME;
-const extremeDebugMode = true; //commonTools.parseBool(process.env.INPUT_EXTREMEDEBUGMODE);
+const extremeDebugMode = commonTools.parseBool(process.env.INPUT_EXTREMEDEBUGMODE);
 
 (async () => {
     // extreme debug mode is specifically used to enumerate the environment in which the VSIX is installed; it is undocumented for a reason
@@ -68,19 +68,19 @@ const extremeDebugMode = true; //commonTools.parseBool(process.env.INPUT_EXTREME
     }
 
     
-    // This is the actual "getCompanies" code
-    // try {
-    //     const token = await commonTools.getToken(tenantId, clientId, clientSecret);
-    //     const companies = await commonTools.getCompanies(token, tenantId, environmentName);
+    //This is the actual "getCompanies" code
+    try {
+        const token = await commonTools.getToken(tenantId, clientId, clientSecret);
+        const companies = await commonTools.getCompanies(token, tenantId, environmentName);
 
-    //     console.log('Companies:');
-    //     companies.forEach((company, idx) => {
-    //         const name = company.name;
-    //         const id = company.id;
-    //         console.log(`${idx + 1}. ${company.name} (ID: ${company.id})`);
-    //     });
-    // }
-    // catch (error) {
-    //     console.error('Error: ', error.message);
-    // }
+        console.log('Companies:');
+        companies.forEach((company, idx) => {
+            const name = company.name;
+            const id = company.id;
+            console.log(`${idx + 1}. ${company.name} (ID: ${company.id})`);
+        });
+    }
+    catch (error) {
+        console.error('Error: ', error.message);
+    }
 })();
