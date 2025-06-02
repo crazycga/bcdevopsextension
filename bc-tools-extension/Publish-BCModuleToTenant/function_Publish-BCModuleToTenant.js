@@ -1,3 +1,4 @@
+const path = require('path');
 const commonTools = require(path.join(__dirname, '_common', 'CommonTools.js'));
 
 const tenantId = process.env.INPUT_TENANTID;
