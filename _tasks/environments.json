@@ -26,6 +26,18 @@
 			"EGGetALCompiler": {
 				"location": "bc-tools-extension/Get-VSIXCompiler/task.json",
 				"taskGuid": "6af71bc7-0491-4779-8e7d-bbc4eeeadbe0"
+			},
+			"EGGetBCCompanies": {
+				"location": "bc-tools-extension/Get-ListOfCompanies/task.json",
+				"taskGuid": "0d4e6693-bdcb-47c0-a373-67a34549da07"
+			},
+			"EGGetBCModules": {
+				"location": "bc-tools-extension/Get-ListOfModules/task.json",
+				"taskGuid": "4a9b312e-5e0d-4239-a254-3ac8808c3c73"
+			},			
+			"EGDeployBCModule": {
+				"location": "bc-tools-extension/Publish-BCModuleToTenant/task.json",
+				"taskGuid": "def7c0a0-0d00-4f62-ae3f-7f084561e721"
 			}
 		}
 	},
@@ -50,7 +62,19 @@
 			"EGGetALCompiler": {
 				"location": "bc-tools-extension/Get-VSIXCompiler/task.json",
 				"taskGuid": "c8d27640-a774-4ed5-a2bd-b2a6d22963e7"
-			}
+			},
+			"EGGetBCCompanies": {
+				"location": "bc-tools-extension/Get-ListOfCompanies/task.json",
+				"taskGuid": "7a875156-f18f-4595-868e-0a1d978b882a"
+			},
+			"EGGetBCModules": {
+				"location": "bc-tools-extension/Get-ListOfModules/task.json",
+				"taskGuid": "0dd565c5-c24f-48a8-9414-9e3de695d934"
+			},			
+			"EGDeployBCModule": {
+				"location": "bc-tools-extension/Publish-BCModuleToTenant/task.json",
+				"taskGuid": "7315a985-6da9-4b4a-bae9-56b04fc492fd"
+			}			
 		}
 	}
 }
