@@ -1,15 +1,21 @@
 # Release Notes - BCBuildTasks Extension
 
+- [Version: 0.1.5](#version-015)
+    + [Feature Release](#feature-release)
+  * [New Features](#new-features)
+    + [1. **EGGetBCCompanies**](#1-eggetbccompanies)
+    + [2. EGGetBCModules](#2-eggetbcmodules)
+    + [3. EGDeployBCModule](#3-egdeploybcmodule)
 - [Version: 0.1.4](#version-014)
     + [Improvement Release](#improvement-release)
-  * [New Features](#new-features)
+  * [New Features](#new-features-1)
     + [1. **EGGetALCompiler**](#1-eggetalcompiler)
     + [2. **EGGetALDependencies**](#2-eggetaldependencies)
     + [3. **EGBuildALPackage**](#3-egbuildalpackage)
   * [Notes & Requirements](#notes--requirements)
 - [Version: 0.1.0](#version-010)
     + [Initial Release](#initial-release)
-  * [New Features](#new-features-1)
+  * [New Features](#new-features-2)
     + [1. **EGGetALCompiler**](#1-eggetalcompiler-1)
     + [2. **EGGetALDependencies**](#2-eggetaldependencies-1)
     + [3. **EGBuildALPackage**](#3-egbuildalpackage-1)
@@ -18,6 +24,42 @@
   * [Known Limitations](#known-limitations)
   * [Support](#support)
   
+# Version: 0.1.5
+
+**Release Date:** 2025-06-03
+
+--- 
+
+### Feature Release
+
+The 0.1.5 of this release has introduced some new features and functionality.  Some of this functionality, specifically `EGDeployBCModule` is still somewhat experimental and subject to future changes.
+
+## New Features
+
+### 1. **EGGetBCCompanies**
+
+This will provide the user with a list of the Business Central companies in a tenant, along with their company id.  A sample output:
+
+```
+Companies:
+1. CRONUS USA, Inc. (ID: fb615954-ba2b-f011-9af4-6045bdc89d67)
+2. My Company (ID: 6f52db6a-ba2b-f011-9af4-6045bdc89d67)
+```
+
+At the time of this release, this routine does not provide an output variable.
+
+### 2. EGGetBCModules
+
+This will provide the user with a list of the installed modules in a Business Central tenant.
+
+At the time of this release, this routine does not provide an output variable.
+
+### 3. EGDeployBCModule
+
+Please ensure that you see the documentation in the Visual Studio Marketplace page on this routine prior to use.
+
+This will attempt to publish an .app file into a tenant.  **This routine is still largely experimental, and feedback is welcomed.**
+
 # Version: 0.1.4
 
 **Release Date:** 2025-05-27

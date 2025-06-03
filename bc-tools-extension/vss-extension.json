@@ -2,7 +2,7 @@
 	"manifestVersion": 1,
 	"id": "eg-bc-build-tasks",
 	"name": "Business Central Build Tasks",
-	"version": "0.1.3",
+	"version": "0.1.5",
 	"publisher": "Evergrowth",
 	"targets": [
 		{
@@ -73,6 +73,18 @@
 		},
 		{
 			"path": "Build-ALPackage"
+		},
+		{
+			"path": "Get-ListOfCompanies"
+		},
+		{
+			"path": "Get-ListOfModules"
+		},
+		{
+			"path": "Publish-BCModuleToTenant"
+		},
+		{
+			"path": "_common"
 		}
 	],
 	"contributions": [
@@ -105,6 +117,36 @@
 			"properties": {
 				"name": "Build-ALPackage"
 			}
-		}
+		},
+		{
+			"id": "Get-ListOfCompaniesTask",
+			"type": "ms.vss-distributed-task.task",
+			"targets": [
+				"ms.vss-distributed-task.tasks"
+			],
+			"properties": {
+				"name": "Get-ListOfCompanies"
+			}
+		},		
+		{
+			"id": "Get-ListOfModulesTask",
+			"type": "ms.vss-distributed-task.task",
+			"targets": [
+				"ms.vss-distributed-task.tasks"
+			],
+			"properties": {
+				"name": "Get-ListOfModules"
+			}
+		},		
+		{
+			"id": "Publish-BCModuleToTenantTask",
+			"type": "ms.vss-distributed-task.task",
+			"targets": [
+				"ms.vss-distributed-task.tasks"
+			],
+			"properties": {
+				"name": "Publish-BCModuleToTenant"
+			}
+		}		
 	]
 }

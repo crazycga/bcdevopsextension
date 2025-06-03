@@ -1,4 +1,5 @@
 <!-- 02c03923-c68c-4d9f-8779-4d81eb807bc9 -->
+<!-- npx markdown-toc <filename.md> -->
 # Business Central Build Tasks for Azure DevOps
 
   * [Overview](#overview)
@@ -10,8 +11,11 @@
     + [Setup Complete](#setup-complete)
   * [Tasks Included](#tasks-included)
     + [1. Get AL Compiler (`EGGetALCompiler`)](#1-get-al-compiler-eggetalcompiler)
-    + [2. Get AL Dependencies (`Get-BCDependencies`)](#2-get-al-dependencies-get-bcdependencies)
+    + [2. Get AL Dependencies (`EGGetALDependencies`)](#2-get-al-dependencies-eggetaldependencies)
     + [3. Build AL Package (`EGALBuildPackage`)](#3-build-al-package-egalbuildpackage)
+    + [4. Get List of Companies (`EGGetBCCompanies`)](#4-get-list-of-companies-eggetbccompanies)
+    + [5. Get List of Extensions (`EGGetBCModules`)](#5-get-list-of-extensions-eggetbcmodules)
+    + [6. Publish Extension to Business Central (`EGDeployBCModule`)](#6-publish-extension-to-business-central-egdeploybcmodule)
   * [Example Pipeline](#example-pipeline)
   * [Security & Trust](#security--trust)
   * [Support](#support)
@@ -182,6 +186,53 @@ If not using the `alVersion` variable from above, the system places the expanded
 |Input|`PackageCachePath`| |`$(Build.SourcesDirectory)\.alpackages`|The folder containing the downloaded `.app` files for the project|
 |Input|`ALEXEPathFolder`|x| |The location of the `bin` folder that contains `win32\alc.exe`; also the output of `Get-VSIXCompiler`|
 
+### 4. Get List of Companies (`EGGetBCCompanies`)
+
+|Type|Name|Required|Default|Use|
+|---|---|---|---|---|
+|Input|`TenantId`|x|N/A|The tenant id of the _target_ Business Central to enumerate|
+|Input|`EnvironmentName`|x|N/A|The environment name from the Business Central administration console for the _target_ environment|
+|Input|`ClientId`|x|N/A|The client id authorized to access the administrative API|
+|Input|`ClientSecret`|x|N/A|The client secret for the client id authorized to access the administrative API|
+
+### 5. Get List of Extensions (`EGGetBCModules`)
+
+|Type|Name|Required|Default|Use|
+|---|---|---|---|---|
+|Input|`TenantId`|x|N/A|The tenant id of the _target_ Business Central to enumerate|
+|Input|`EnvironmentName`|x|N/A|The environment name from the Business Central administration console for the _target_ environment|
+|Input|`ClientId`|x|N/A|The client id authorized to access the extension deployment API|
+|Input|`ClientSecret`|x|N/A|The client secret for the client id authorized to access the extension deployment API|
+|Input|`CompanyId`|x|N/A|A company id (guid) is required to enumerate, however the response should be for the tenant; acquire a company id from `EGGetBCCompanies` above|
+|Input|`ModuleId`||`<blank>`|To restrict the list of extensions to a single extension (perhaps the one being deployed), set this field to the guid of the extension|
+|Input|`ExcludeMicrosoft`||`false`|Set to `true` to return a list that doesn't include extensions published by Microsoft; useful with large lists of extensions|
+
+### 6. Publish Extension to Business Central (`EGDeployBCModule`)
+
+**This function is still somewhat experimental.**
+
+This function is intended to publish a compiled extension (`.app` file) to a Business Central tenant, and wait for a response.  In its current form it has been demonstrated to create the extension upload and successfully call the publish routine (effectively code complete), however there are many external circumstances that may cause this step to fail.
+
+Overall, the flow of operations is:
+1. Create an upload bookmark in the API
+2. Upload the actual `.app` file
+3. Call a specific routine in the API
+4. Call the extension deployment status API until success
+
+There is not much more control that is provided and even the response codes from the API do not provide enough information to determine problems, diagnose issues or troubleshoot.
+
+|Type|Name|Required|Default|Use|
+|---|---|---|---|---|
+|Input|`TenantId`|x|N/A|The tenant id of the _target_ Business Central to enumerate|
+|Input|`EnvironmentName`|x|N/A|The environment name from the Business Central administration console for the _target_ environment|
+|Input|`ClientId`|x|N/A|The client id authorized to access the extension deployment API|
+|Input|`ClientSecret`|x|N/A|The client secret for the client id authorized to access the extension deployment API|
+|Input|`CompanyId`|x|N/A|A company id (guid) is required to enumerate, however the response should be for the tenant; acquire a company id from `EGGetBCCompanies` above|
+|Input|`AppFilePath`|x|N/A|The full file name and path of the pre-compiled `.app` file|
+|Input|`SkipPolling`||`false`|Set to `true` to skip polling; note that the pipeline will be subsequently _unaware_ of the status of the upload|
+|Input|`PollingFrequency`||`10`|The number of **seconds** to wait between attempts to poll the extension deployment status for information after the upload|
+|Input|`MaxPollingTimeout`||`600`|The maximum number of **seconds** to stop the pipeline to wait for the result of the deployment status; **note: use this value to prevent the pipeline from consuming too much time waiting for a response**|
+
 ## Example Pipeline
 
 ```yaml
@@ -190,31 +241,59 @@ If not using the `alVersion` variable from above, the system places the expanded
   inputs:
    DownloadDirectory: $(Build.SourcesDirectory)\compiler
    Version: 'latest'
+   ExpansionDirectory: 'expanded'
 
 - task: EGGetALDependencies@0
   displayName: "Get AL dependencies"
   inputs:
-   ClientId: "<a guid from Entra>"
-   ClientSecret: "<yeah, it ain't happening, son>"
-   EnvironmentName: 'ussandbox'
-   PathToAppJson: $(Build.SourcesDirectory)\ClientPTE
+   ClientId: "<your client id>"
+   ClientSecret: "<your client secret>"
+   EnvironmentName: '<your environment name>'
+   PathToAppJson: $(Build.SourcesDirectory)\CodeModule
    PathToPackagesDirectory: $(Build.SourcesDirectory)\.alpackages
-   TenantId: "<a guid from Entra>"
+   TenantId: "<your tenant id>"
 
 - task: EGBuildALPackage@0
   displayName: "Compile AL package"
   inputs:
-    ALEXEPathFolder: $(Build.SourcesDirectory)\compiler\expanded\extension\bin\
+    ALEXEPathFolder: $(Build.SourcesDirectory)/compiler/expanded/extension/bin/win32/alc.exe
     EntireAppName: "TestApp.1.1.1.app"
     OutAppFolder: $(Build.ArtifactStagingDirectory)
     PackageCachePath: $(Build.SourcesDirectory)\.alpackages
-    ProjectPath: $(Build.SourcesDirectory)\ClientPTE
+    ProjectPath: $(Build.SourcesDirectory)\CodeModule
 
 - task: PublishBuildArtifacts@1
   displayName: "Publish artifact"
   inputs:
     ArtifactName: "drop"
     PathtoPublish: $(Build.ArtifactStagingDirectory)
+
+- task: EGDeployBCModule@0
+  displayName: "Deploy module to Business Central"
+  inputs:
+    TenantId: "<target tenant id>"
+    EnvironmentName: "<target environment name>"
+    ClientId: "<target-capable client id>"
+    ClientSecret: "<target-capable client secret>"
+    CompanyId: "<company id>"
+    AppFilePath: "$(Build.ArtifactStagingDirectory)\\TestApp.1.1.1.app"
+
+- task: EGGetBCCompanies@0
+  displayName: "Getting list of companies"
+  inputs:
+    TenantId: "<target tenant id>"
+    EnvironmentName: "<target environment name>"
+    ClientId: "<target-capable client id>"
+    ClientSecret: "<target-capable client secret>"
+
+- task: EGGetBCModules@0
+  displayName: "Getting list of modules installed"
+  inputs:
+    TenantId: "<target tenant id>"
+    EnvironmentName: "<target environment name>"
+    ClientId: "<target-capable client id>"
+    ClientSecret: "<target-capable client secret>"
+    CompanyId: "<company id>"
 
 ```
 

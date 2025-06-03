@@ -4,7 +4,7 @@ on:
   push:
     branches:
       - main
-      - dev-trunk
+      - dev_trunk
   #do not add tags: or the CI will re-fire on the tagging step; adding comment for trigger request
   workflow_dispatch:
     inputs:
@@ -42,9 +42,9 @@ jobs:
             if [[ "${{ github.event.inputs.publish }}" == "true" ]]; then
               SHOULD_PUBLISH="true"
             fi
-          # Or if it's a push to main or dev-trunk and we have a PAT
+          # Or if it's a push to main or dev_trunk and we have a PAT
           elif [[ "${{ github.event_name }}" == "push" && -n "$ADO_PAT" ]]; then
-            if [[ "${{ github.ref }}" == "refs/heads/main" || "${{ github.ref }}" == "refs/heads/dev-trunk" ]]; then
+            if [[ "${{ github.ref }}" == "refs/heads/main" || "${{ github.ref }}" == "refs/heads/dev_trunk" ]]; then
               SHOULD_PUBLISH="true"
             fi
           fi
@@ -106,7 +106,7 @@ jobs:
           ADO_PAT: ${{ secrets.ADO_PAT }}
 
       - name: Tag repo with new version
-        if: env.SHOULD_PUBLISH == 'true'
+        if: env.SHOULD_PUBLISH == 'true' && (github.ref == 'refs/heads/main' || github.ref == 'refs/heads/dev_trunk')
         shell: pwsh
         run: |
           $versionPath = "_tasks/environments.json"
