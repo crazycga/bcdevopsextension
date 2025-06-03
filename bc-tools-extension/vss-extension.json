@@ -2,7 +2,7 @@
 	"manifestVersion": 1,
 	"id": "eg-bc-build-tasks",
 	"name": "Business Central Build Tasks",
-	"version": "0.1.3",
+	"version": "0.1.5",
 	"publisher": "Evergrowth",
 	"targets": [
 		{
