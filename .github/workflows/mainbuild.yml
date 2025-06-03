@@ -106,7 +106,7 @@ jobs:
           ADO_PAT: ${{ secrets.ADO_PAT }}
 
       - name: Tag repo with new version
-        if: env.SHOULD_PUBLISH == 'true'
+        if: env.SHOULD_PUBLISH == 'true' && (github.ref == 'refs/heads/main' || github.ref == 'refs/heads/dev-trunk')
         shell: pwsh
         run: |
           $versionPath = "_tasks/environments.json"
