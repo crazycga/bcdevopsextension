@@ -26,7 +26,7 @@
   
 # Version: 0.1.5
 
-**Release Date:** TBD
+**Release Date:** 2025-06-03
 
 --- 
 
