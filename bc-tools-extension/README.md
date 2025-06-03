@@ -239,7 +239,7 @@ There is not much more control that is provided and even the response codes from
 - task: EGGetALCompiler@0
   displayName: "Get AL compiler"
   inputs:
-   DownloadDirectory: $(Build.SourcesDirectory)/compiler
+   DownloadDirectory: $(Build.SourcesDirectory)\compiler
    Version: 'latest'
    ExpansionDirectory: 'expanded'
 
