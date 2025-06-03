@@ -4,7 +4,7 @@ on:
   push:
     branches:
       - main
-      - dev-trunk
+      - dev_trunk
   #do not add tags: or the CI will re-fire on the tagging step; adding comment for trigger request
   workflow_dispatch:
     inputs:
