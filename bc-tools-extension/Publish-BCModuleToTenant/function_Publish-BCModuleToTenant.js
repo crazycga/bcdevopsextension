@@ -47,10 +47,13 @@ const maxTimeout = parseInt(process.env.INPUT_MAXPOLLINGTIMEOUT);
         console.log('Waiting 5 seconds to allow backend to process file...');
         await new Promise(resolve => setTimeout(resolve, 5000));
         console.log('********** callNavUploadCommand');
-        let callUpload = await commonTools.callNavUploadCommand(token, tenantId, environmentName, companyId, extId);
+        let callUpload = await commonTools.callNavUploadCommand(token, tenantId, environmentName, companyId, extId, odata_etag);
         console.log('********** now awaiting response');
         if (!skipPolling) {
             let responseCallback = await commonTools.waitForResponse(token, tenantId, environmentName, companyId, extId, pollingFrequency, maxTimeout);
+            console.debug('*DEBUG*DEBUG*DEBUG*DEBUG*DEBUG*DEBUG*DEBUG*DEBUG*DEBUG*DEBUG*DEBUG*DEBUG*DEBUG*DEBUG*DEBUG*DEBUG*DEBUG*DEBUG*DEBUG*DEBUG*DEBUG');
+            console.debug(responseCallback);
+            console.debug('*DEBUG*DEBUG*DEBUG*DEBUG*DEBUG*DEBUG*DEBUG*DEBUG*DEBUG*DEBUG*DEBUG*DEBUG*DEBUG*DEBUG*DEBUG*DEBUG*DEBUG*DEBUG*DEBUG*DEBUG*DEBUG');
         }
         console.log('********** done');
     }
