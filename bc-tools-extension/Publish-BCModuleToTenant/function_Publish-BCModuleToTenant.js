@@ -41,6 +41,8 @@ const maxTimeout = parseInt(process.env.INPUT_MAXPOLLINGTIMEOUT);
         console.log('********** uploadInstallationFile');
         let resulting = await commonTools.uploadInstallationFile(token, tenantId, environmentName, companyId, extId, filePath);
         console.log(resulting ?? 'resulting succeeded');
+        console.log('Waiting 5 seconds to allow backend to process file...');
+        await new Promise(resolve => setTimeout(resolve, 5000));
         console.log('********** callNavUploadCommand');
         let callUpload = await commonTools.callNavUploadCommand(token, tenantId, environmentName, companyId, extId);
         console.log('********** now awaiting response');
