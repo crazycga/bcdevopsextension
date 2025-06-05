@@ -445,7 +445,7 @@ async function callNavUploadCommand(token, tenantId, environmentName, companyId,
 
     try {
         console.log('Preparing to call Microsoft.NAV.upload');
-        const response = await fetch(apiUrl, {
+        let response = await fetch(apiUrl, {
             method: 'POST',
             headers: {
                 'Authorization': `Bearer ${token}`,  
@@ -458,9 +458,25 @@ async function callNavUploadCommand(token, tenantId, environmentName, companyId,
         console.log('Call to Microsoft.NAV.upload successful?  ¯\\_(ツ)_/¯  It\'s not like Microsoft tells us...');
         if (!response.ok) {
             console.error('Failed to call Microsoft.NAV.upload for deployment: ', response.status);
-            const error = await response.text();
-            console.error(error);
-            throw new Error('Extension upload call query failed');
+            if (response.status === 409) {
+                let refreshCheck = await createInstallationBookmark(token, tenantId, environmentName, companyId);
+                console.log('Original odata.etag: ', odata_etag);
+                odata_etag = refreshCheck['@odata.etag'];
+                console.log('Refreshed odata.etag:', odata_etag);
+                response = await fetch(apiUrl, {
+                    method: 'POST',
+                    headers: {
+                        'Authorization': `Bearer ${token}`,  
+                        'Accept': 'application/json',
+                        'Accept-Encoding': 'gzip, deflate, br',
+                        'If-Match': odata_etag
+                    }
+                });
+            } else {
+                const error = await response.text();
+                console.error(error);
+                throw new Error('Extension upload call query failed');
+            }
         }
         console.debug('Made call to Microsoft.NAV.upload; response code: ', response.status);
 
