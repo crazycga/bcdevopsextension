@@ -462,7 +462,11 @@ async function callNavUploadCommand(token, tenantId, environmentName, companyId,
                 console.log('Wait a second, that was a 409; this means that the @odata.etag is stale, let me try to get another one');
                 let refreshCheck = await createInstallationBookmark(token, tenantId, environmentName, companyId);
                 console.log('Original odata.etag: ', odata_etag);
-                odata_etag = refreshCheck['@odata.etag'];
+                if (Array.isArray(refreshCheck)) {
+                    odata_etag = refreshCheck[0]['@odata.etag'];
+                } else { 
+                    odata_etag = refreshCheck['@odata.etag'];
+                }
                 console.log('Refreshed odata.etag:', odata_etag);
                 response = await fetch(apiUrl, {
                     method: 'POST',
