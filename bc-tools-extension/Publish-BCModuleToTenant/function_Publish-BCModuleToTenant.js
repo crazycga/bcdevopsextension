@@ -30,16 +30,19 @@ const maxTimeout = parseInt(process.env.INPUT_MAXPOLLINGTIMEOUT);
         const token = await commonTools.getToken(tenantId, clientId, clientSecret);
         console.log('********** createInstallationBookmark');
         let test = await commonTools.createInstallationBookmark(token, tenantId, environmentName, companyId);
-        console.log(test);
         let extId;
+        let odata_etag;
         if (Array.isArray(test)) {
             extId = test[0].systemId;
+            odata_etag = test[0]['@odata.etag'];
         } else { 
             extId = test.systemId;
+            odata_etag = test['@odata.etag'];
         }
         console.log('ExtId (the bookmark): ', extId);
+        console.log('@odata.etag: ', odata_etag);
         console.log('********** uploadInstallationFile');
-        let resulting = await commonTools.uploadInstallationFile(token, tenantId, environmentName, companyId, extId, filePath);
+        let resulting = await commonTools.uploadInstallationFile(token, tenantId, environmentName, companyId, extId, filePath, odata_etag);
         console.log(resulting ?? 'resulting succeeded');
         console.log('Waiting 5 seconds to allow backend to process file...');
         await new Promise(resolve => setTimeout(resolve, 5000));

@@ -381,9 +381,10 @@ async function createInstallationBookmark(token, tenantId, environmentName, comp
  * @param {string} filePathAndName 
  * @returns {boolean} true if successful; false if not
  */
-async function uploadInstallationFile(token, tenantId, environmentName, companyId, operationId, filePathAndName) {
+async function uploadInstallationFile(token, tenantId, environmentName, companyId, operationId, filePathAndName, odata_etag) {
     const apiUrl = `https://api.businesscentral.dynamics.com/v2.0/${tenantId}/${environmentName}/api/microsoft/automation/v2.0/companies(${companyId})/extensionUpload(${operationId})/extensionContent`;
     console.debug('API (uploadInstallationFile): ', apiUrl);
+    console.debug('@odata.etag: ', odata_etag);
 
     try {
         await fs.access(filePathAndName);
@@ -398,7 +399,7 @@ async function uploadInstallationFile(token, tenantId, environmentName, companyI
         console.debug('Headers:', {
             'Authorization': '[REDACTED]',
             'Content-Type': 'application/octet-stream',
-            'If-Match': '*'
+            'If-Match': odata_etag
         });
 
         const response = await fetch(apiUrl, {
@@ -406,7 +407,7 @@ async function uploadInstallationFile(token, tenantId, environmentName, companyI
             headers: {
                 'Authorization': `Bearer ${token}`,
                 'Content-Type': 'application/octet-stream',
-                'If-Match': '*'
+                'If-Match': odata_etag
             },
             body: fileBuffer
         });
@@ -437,9 +438,10 @@ async function uploadInstallationFile(token, tenantId, environmentName, companyI
     }
 }
 
-async function callNavUploadCommand(token, tenantId, environmentName, companyId, operationId) {
+async function callNavUploadCommand(token, tenantId, environmentName, companyId, operationId, odata_etag) {
     const apiUrl = `https://api.businesscentral.dynamics.com/v2.0/${tenantId}/${environmentName}/api/microsoft/automation/v2.0/companies(${companyId})/extensionUpload(${operationId})/Microsoft.NAV.upload`;
     console.debug('API (callNavUploadCommand): ', apiUrl);
+    console.debug('@odata.etag: ', odata_etag)
 
     try {
         console.log('Preparing to call Microsoft.NAV.upload');
@@ -448,7 +450,8 @@ async function callNavUploadCommand(token, tenantId, environmentName, companyId,
             headers: {
                 'Authorization': `Bearer ${token}`,  
                 'Accept': 'application/json',
-                'Accept-Encoding': 'gzip, deflate, br'  // exclude 'br'
+                'Accept-Encoding': 'gzip, deflate, br',
+                'If-Match': odata_etag
             }
         });
 
@@ -459,8 +462,20 @@ async function callNavUploadCommand(token, tenantId, environmentName, companyId,
             console.error(error);
             throw new Error('Extension upload call query failed');
         }
-
         console.debug('Made call to Microsoft.NAV.upload; response code: ', response.status);
+
+        console.debug('Making a quick check to see if the bookmark still exists in the same form....');
+        let quickCheck = await createInstallationBookmark(token, tenantId, environmentName, companyId);
+
+        console.debug(quickCheck);
+        console.debug('Original Id:', operationId);
+        console.debug('Current Id: ', quickCheck.operationId);
+        console.debug('');
+        console.debug('Original eTag:', odata_etag);
+        console.debug('Current eTag: ', quickCheck['@odata.etag']);
+        console.debug('');
+        console.debug('IF THESE DO NOT MATCH, IT MEANS THAT THE UPLOAD COMMAND DESTROYED THE ORIGINAL.');
+
     } catch (err) {
         console.error('Error during call: ', err.name, err.message);
         throw err;
