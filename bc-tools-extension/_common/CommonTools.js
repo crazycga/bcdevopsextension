@@ -1,5 +1,6 @@
 const path = require('path');
 const fs = require('fs/promises');
+const { stat } = require('fs');
 
 const testMode = process.env.INPUT_TESTMODE;
 
@@ -238,6 +239,9 @@ async function getInstallationStatus(token, tenantId, environmentName, companyId
         throw new Error('Extension deployment status query failed');
     }
 
+    console.debug('API response (getInstallationStatus)');
+    console.debug(await response.json());
+
     const data = await response.json();
     return data.value;    
 }
@@ -383,7 +387,20 @@ async function uploadInstallationFile(token, tenantId, environmentName, companyI
 
     try {
         await fs.access(filePathAndName);
+
+        const stats = await fs.stat(filePathAndName);
+        console.log(`File found: ${filePathAndName} (${stats.size} bytes)`);
+
         const fileBuffer = await fs.readFile(filePathAndName);
+        console.debug(`Prepared file buffer of ${stats.size} bytes from file`);
+
+        console.debug('Uploading file to: ', apiUrl);
+        console.debug('Headers:', {
+            'Authorization': '[REDACTED]',
+            'Content-Type': 'application/octet-stream',
+            'If-Match': '*'
+        });
+
         const response = await fetch(apiUrl, {
             method: 'PATCH',
             headers: {
