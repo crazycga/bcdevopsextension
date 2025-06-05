@@ -450,8 +450,7 @@ async function callNavUploadCommand(token, tenantId, environmentName, companyId,
             headers: {
                 'Authorization': `Bearer ${token}`,  
                 'Accept': 'application/json',
-                'Accept-Encoding': 'gzip, deflate, br',
-                'If-Match': odata_etag
+                'Accept-Encoding': 'gzip, deflate, br'
             }
         });
 
@@ -473,8 +472,7 @@ async function callNavUploadCommand(token, tenantId, environmentName, companyId,
                     headers: {
                         'Authorization': `Bearer ${token}`,  
                         'Accept': 'application/json',
-                        'Accept-Encoding': 'gzip, deflate, br',
-                        'If-Match': odata_etag
+                        'Accept-Encoding': 'gzip, deflate, br'
                     }
                 });
             } else {
