@@ -1,5 +1,6 @@
 # Release Notes - BCBuildTasks Extension
 
+- [Version: 0.1.6](#version-016)
 - [Version: 0.1.5](#version-015)
     + [Feature Release](#feature-release)
   * [New Features](#new-features)
@@ -23,7 +24,11 @@
   * [Example Pipeline Usage](#example-pipeline-usage)
   * [Known Limitations](#known-limitations)
   * [Support](#support)
-  
+
+# Version: 0.1.6
+
+- Addresses bug [#26](https://github.com/crazycga/bcdevopsextension/issues/26): Publish command not working correctly
+
 # Version: 0.1.5
 
 **Release Date:** 2025-06-03

@@ -459,6 +459,7 @@ async function callNavUploadCommand(token, tenantId, environmentName, companyId,
         if (!response.ok) {
             console.error('Failed to call Microsoft.NAV.upload for deployment: ', response.status);
             if (response.status === 409) {
+                console.log('Wait a second, that was a 409; this means that the @odata.etag is stale, let me try to get another one');
                 let refreshCheck = await createInstallationBookmark(token, tenantId, environmentName, companyId);
                 console.log('Original odata.etag: ', odata_etag);
                 odata_etag = refreshCheck['@odata.etag'];
@@ -479,19 +480,6 @@ async function callNavUploadCommand(token, tenantId, environmentName, companyId,
             }
         }
         console.debug('Made call to Microsoft.NAV.upload; response code: ', response.status);
-
-        console.debug('Making a quick check to see if the bookmark still exists in the same form....');
-        let quickCheck = await createInstallationBookmark(token, tenantId, environmentName, companyId);
-
-        console.debug(quickCheck);
-        console.debug('Original Id:', operationId);
-        console.debug('Current Id: ', quickCheck.operationId);
-        console.debug('');
-        console.debug('Original eTag:', odata_etag);
-        console.debug('Current eTag: ', quickCheck['@odata.etag']);
-        console.debug('');
-        console.debug('IF THESE DO NOT MATCH, IT MEANS THAT THE UPLOAD COMMAND DESTROYED THE ORIGINAL.');
-
     } catch (err) {
         console.error('Error during call: ', err.name, err.message);
         throw err;

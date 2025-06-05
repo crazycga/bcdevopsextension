@@ -41,9 +41,9 @@ const maxTimeout = parseInt(process.env.INPUT_MAXPOLLINGTIMEOUT);
         }
         console.log('ExtId (the bookmark): ', extId);
         console.log('@odata.etag: ', odata_etag);
+        console.log('');
         console.log('********** uploadInstallationFile');
         let resulting = await commonTools.uploadInstallationFile(token, tenantId, environmentName, companyId, extId, filePath, odata_etag);
-        console.log(resulting ?? 'resulting succeeded');
         console.log('Waiting 5 seconds to allow backend to process file...');
         await new Promise(resolve => setTimeout(resolve, 5000));
         console.log('********** callNavUploadCommand');
