@@ -4,18 +4,31 @@ const { stat } = require('fs');
 
 const testMode = process.env.INPUT_TESTMODE;
 
+function escapeForVso(message) {
+    if (typeof message !== 'string') return '';
+
+    return message
+        .replace(/%/g, '%25')      // MUST come first to avoid double escaping
+        .replace(/\r/g, '%0D')
+        .replace(/\n/g, '%0A')
+        .replace(/\[/g, '%5B')
+        .replace(/\]/g, '%5D')
+        .replace(/'/g, '&#39;')     // optional: replace single quotes with HTML entity
+        .replace(/"/g, '&quot;');   // optional: double quotes as well
+}
+
 const logger = {
     debug: async function (message) {
-        console.log(`##vso[task.debug]${message}`);
+        console.log(`##vso[task.debug]${escapeForVso(message)}`);
     },
     info: async function (message) {
         console.log(message);
     },
     warn: async function (message) {
-        console.log(`##vso[task.warning]${message}`);
+        console.log(`##vso[task.warning]${escapeForVso(message)}`);
     },
     error: async function (message) {
-        console.log(`##vso[task.error]${message}`);
+        console.log(`##vso[task.error]${escapeForVso(message)}`);
     }
 };
 
