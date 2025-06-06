@@ -13,8 +13,6 @@ function escapeForVso(message) {
         .replace(/\n/g, '%0A')
         .replace(/\[/g, '%5B')
         .replace(/\]/g, '%5D')
-        .replace(/'/g, '&#39;')     // optional: replace single quotes with HTML entity
-        .replace(/"/g, '&quot;');   // optional: double quotes as well
 }
 
 const logger = {
