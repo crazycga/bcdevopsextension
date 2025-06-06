@@ -25,10 +25,10 @@ const logger = {
         console.log(message);
     },
     warn: async function (message) {
-        console.log(`##vso[task.warning]${escapeForVso(message)}`);
+        console.log(`##vso[task.logissue type=warning]${escapeForVso(message)}`);
     },
     error: async function (message) {
-        console.log(`##vso[task.error]${escapeForVso(message)}`);
+        console.log(`##vso[task.logissue type=error]${escapeForVso(message)}`);
     }
 };
 
