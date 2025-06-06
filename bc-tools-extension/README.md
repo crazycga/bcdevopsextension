@@ -297,6 +297,22 @@ There is not much more control that is provided and even the response codes from
 
 ```
 
+## Common Failures
+
+Here are some common failures and their likely causes:
+
+|Failure|Cause|
+|---|---|
+|**Immediate fail on deploy** | An immediate failure often means the extension’s **version number hasn’t changed**. Business Central may retain internal metadata **even if** the extension was unpublished and removed. This can cause silent rejections during re-deploy. To confirm, try a manual upload — the web interface will usually surface an error message that the API silently swallows. |
+| **Extension never installs / stuck in “InProgress”** | Business Central backend is overloaded or stalled (e.g., schema sync issues, queued deployments). | Increase `PollingTimeout` and check the BC admin center for other queued extensions or backend delays. |
+| **Extension fails with no visible error message** | The BC API may suppress detailed errors. Often due to invalid dependencies, permission errors, or duplicate version conflicts. | Try uploading the extension manually through the BC UI to surface hidden error messages. |
+| **Authentication fails** | Incorrect or expired `ClientSecret`; or app registration missing permissions. | Ensure app has Application permissions, `API.ReadWrite.All`, and admin consent granted. Rotate secret if expired. |
+| **Upload succeeds (204) but deployment never completes** | 204 means "upload accepted", not "installed". Backend may not trigger processing. | Let polling run. If it never transitions, retry `Microsoft.NAV.upload` call or re-check bookmark. |
+| **Multiple extension versions appear in BC** | Business Central retains ghost entries if version number isn't changed. | Always increment the version number (`1.0.0.x`) for every build. |
+| **Pipeline fails to find `app.json`** | Folder structure doesn't match expected default; `PathToAppJson` may be incorrect. | Confirm folder layout. Use an inline `ls` or echo step to validate paths before running. |
+| **Polling hangs until timeout** | Deployment didn’t register; call to `Microsoft.NAV.upload` may have silently failed. | Recheck that upload succeeded and bookmark is valid. Consider increasing logging verbosity. |
+| **ENOENT / ETAG errors during upload** | Missing `.app` file or stale `@odata.etag` from a previous upload attempt. | Confirm `Build Package` step ran and `.app` file exists. If needed, reacquire a fresh bookmark with valid ETAG. |
+
 ## Security & Trust
 
 These tasks are designed for internal use and are provided under the Evergrowth publisher namespace. All task logic is exposed via wrapper scripts for transparency and audit.  Source code is available on GitHub.

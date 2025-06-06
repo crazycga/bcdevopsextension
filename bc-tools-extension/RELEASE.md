@@ -1,5 +1,6 @@
 # Release Notes - BCBuildTasks Extension
 
+- [Version: 0.1.7](#version-017)
 - [Version: 0.1.6](#version-016)
 - [Version: 0.1.5](#version-015)
     + [Feature Release](#feature-release)
@@ -24,6 +25,18 @@
   * [Example Pipeline Usage](#example-pipeline-usage)
   * [Known Limitations](#known-limitations)
   * [Support](#support)
+
+# Version: 0.1.7
+
+## Fixes
+
+- Fixed [#26](https://github.com/crazycga/bcdevopsextension/issues/26): Publish command not working correctly; should be fixed now.  
+- Timeout command wasn't working properly, that has been fixed as well.  
+
+## Improvements
+
+- Added developer notes to the repo README.md.  
+- Added possible errors and causal factors to README.md and VS Marketplace page.
 
 # Version: 0.1.6
 
