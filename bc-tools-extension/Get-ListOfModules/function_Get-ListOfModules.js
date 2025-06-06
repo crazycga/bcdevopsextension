@@ -17,9 +17,11 @@ const excludeMicrosoft = process.env.INPUT_EXCLUDEMICROSOFT;
 
         console.log('Modules:');
         modules.forEach((module, idx) => {
-            const name = module.name;
+            const name = module.displayName;
             const id = module.id;
-            console.log(`${idx + 1}. ${module.displayName} (ID: ${module.id})`);
+            const pid = module.packageId
+            const version = `${module.versionMajor}.${module.versionMinor}.${module.versionBuild}.${module.versionRevision}`;
+            console.log(`${(idx + 1).toString().padStart(3)}. ${name.padEnd(60)} (Module ID: ${id}) v${version.padEnd(20)} (Package ID: ${pid})`);
         });
     } catch (error) {
         console.error('Error: ', error.message);

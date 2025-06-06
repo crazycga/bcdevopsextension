@@ -57,12 +57,12 @@ const extremeDebugMode = commonTools.parseBool(process.env.INPUT_EXTREMEDEBUGMOD
 
         console.log('**********************************************************');
         const expectedPath = path.resolve(__dirname, '../_common/CommonTools.js');
-        console.log('👀 Trying to stat:', expectedPath);
+        console.log('Trying to stat:', expectedPath);
         try {
             fs.statSync(expectedPath);
-            console.log('✅ Found commonTools at expected path');
+            console.log('Found commonTools at expected path');
         } catch {
-            console.log('❌ commonTools NOT found at expected path');
+            console.log('commonTools NOT found at expected path');
         }
     }
 
@@ -76,7 +76,7 @@ const extremeDebugMode = commonTools.parseBool(process.env.INPUT_EXTREMEDEBUGMOD
         companies.forEach((company, idx) => {
             const name = company.name;
             const id = company.id;
-            console.log(`${idx + 1}. ${company.name} (ID: ${company.id})`);
+            console.log(`${(idx + 1).toString().padStart(3)}. (ID: ${company.id}) ${company.name.padEnd(80)}`);
         });
     }
     catch (error) {
