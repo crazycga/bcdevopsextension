@@ -491,7 +491,7 @@ async function callNavUploadCommand(token, tenantId, environmentName, companyId,
 async function waitForResponse(token, tenantId, environmentName, companyId, operationId, waitTime, maxWaitTime) {
     const sleep = (ms) => new Promise(resolve => setTimeout(resolve, ms * 1000));
     const startTimeStamp = Date.now();
-    
+    let currentTimeStamp = Date.now();
 
     console.log(`Waiting an initial 2 seconds before polling...`);
     await sleep(2);
@@ -516,7 +516,7 @@ async function waitForResponse(token, tenantId, environmentName, companyId, oper
         }
         console.debug(Date.now(), ': checked progress, result:', thisCheck[0].status);
         if (!parseBool(manualBreak)) { await sleep(waitTime) };
-        let currentTimeStamp = Date.now();
+        currentTimeStamp = Date.now();
     } while ((((currentTimeStamp - startTimeStamp) / 1000) < maxWaitTime) && !parseBool(manualBreak));
 }
 
