@@ -17,7 +17,7 @@ const maxTimeout = parseInt(process.env.INPUT_MAXPOLLINGTIMEOUT);
     console.log(`TenantId: ${tenantId}`);
     console.log(`EnvironmentName: ${environmentName}`);
     console.log(`ClientId: ${clientId}`);
-    console.log(`ClientSecret: 'Yeah, right, try again'`);
+    console.log(`ClientSecret: [REDACTED]`);
     console.log(`CompanyId: ${companyId}`);
     console.log(`AppFilePath: ${filePath}`);
     console.log(`SkipPolling: ${skipPolling}`);
@@ -26,9 +26,9 @@ const maxTimeout = parseInt(process.env.INPUT_MAXPOLLINGTIMEOUT);
     console.log('');
 
     try {
-        console.log('********** getToken');
+        console.log('>>>>>>>>>> getToken');
         const token = await commonTools.getToken(tenantId, clientId, clientSecret);
-        console.log('********** createInstallationBookmark');
+        console.log('>>>>>>>>>> createInstallationBookmark');
         let test = await commonTools.createInstallationBookmark(token, tenantId, environmentName, companyId);
         let extId;
         let odata_etag;
@@ -39,23 +39,20 @@ const maxTimeout = parseInt(process.env.INPUT_MAXPOLLINGTIMEOUT);
             extId = test.systemId;
             odata_etag = test['@odata.etag'];
         }
-        console.log('ExtId (the bookmark): ', extId);
-        console.log('@odata.etag: ', odata_etag);
-        console.log('');
-        console.log('********** uploadInstallationFile');
+        console.debug('>>>>>>>>>> ExtId (the bookmark): ', extId);
+        console.debug('>>>>>>>>>> @odata.etag: ', odata_etag);
+        console.debug('');
+        console.log('>>>>>>>>>> uploadInstallationFile');
         let resulting = await commonTools.uploadInstallationFile(token, tenantId, environmentName, companyId, extId, filePath, odata_etag);
         console.log('Waiting 5 seconds to allow backend to process file...');
         await new Promise(resolve => setTimeout(resolve, 5000));
-        console.log('********** callNavUploadCommand');
+        console.log('>>>>>>>>>> callNavUploadCommand');
         let callUpload = await commonTools.callNavUploadCommand(token, tenantId, environmentName, companyId, extId, odata_etag);
-        console.log('********** now awaiting response');
+        console.log('>>>>>>>>>> now awaiting response');
         if (!skipPolling) {
             let responseCallback = await commonTools.waitForResponse(token, tenantId, environmentName, companyId, extId, pollingFrequency, maxTimeout);
-            console.debug('*DEBUG*DEBUG*DEBUG*DEBUG*DEBUG*DEBUG*DEBUG*DEBUG*DEBUG*DEBUG*DEBUG*DEBUG*DEBUG*DEBUG*DEBUG*DEBUG*DEBUG*DEBUG*DEBUG*DEBUG*DEBUG');
-            console.debug(responseCallback);
-            console.debug('*DEBUG*DEBUG*DEBUG*DEBUG*DEBUG*DEBUG*DEBUG*DEBUG*DEBUG*DEBUG*DEBUG*DEBUG*DEBUG*DEBUG*DEBUG*DEBUG*DEBUG*DEBUG*DEBUG*DEBUG*DEBUG');
         }
-        console.log('********** done');
+        console.log('>>>>>>>>>> done');
     }
     catch (error) {
         console.error('Error: ', error.message);
