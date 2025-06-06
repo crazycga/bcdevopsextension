@@ -6,8 +6,8 @@
     + [Feature Release](#feature-release)
   * [New Features](#new-features)
     + [1. **EGGetBCCompanies**](#1-eggetbccompanies)
-    + [2. EGGetBCModules](#2-eggetbcmodules)
-    + [3. EGDeployBCModule](#3-egdeploybcmodule)
+    + [2. **EGGetBCModules**](#2-eggetbcmodules)
+    + [3. **EGDeployBCModule**](#3-egdeploybcmodule)
 - [Version: 0.1.4](#version-014)
     + [Improvement Release](#improvement-release)
   * [New Features](#new-features-1)
@@ -37,6 +37,8 @@
 
 - Added developer notes to the repo README.md.  
 - Added possible errors and causal factors to README.md and VS Marketplace page.
+- Prettified some of the output logs for `EGGetBCCompanies` and `EGGetBCModules`.
+- Cleaned up some logging in `EGDeployBCModule`.
 
 # Version: 0.1.6
 
