@@ -4,9 +4,24 @@ const { stat } = require('fs');
 
 const testMode = process.env.INPUT_TESTMODE;
 
+const logger = {
+    debug: async function (message) {
+        console.log(`##vso[task.debug]${message}`);
+    },
+    info: async function (message) {
+        console.log(message);
+    },
+    warn: async function (message) {
+        console.log(`##vso[task.warning]${message}`);
+    },
+    error: async function (message) {
+        console.log(`##vso[task.error]${message}`);
+    }
+};
+
 // using an environmental variable of TESTMODE = "true" will try and prevent specific JSON posts; it is a left over from initial testing
 if (parseBool(testMode)) {
-    console.log(`Invocation received with TestMode: ${testMode}`);
+    logger.info(`Invocation received with TestMode: ${testMode}`);
 }
 
 // this module uses undici for fetching specifically because the call to Microsoft.NAV.upload will return malformed and node-fetch can't parse it
@@ -14,7 +29,7 @@ let fetch;
 try {
     fetch = require('undici').fetch;
 } catch (_) {
-    console.warn("'undici' not found. Attempting to install...");
+    logger.warn("'undici' not found. Attempting to install...");
     const projectRoot = path.resolve(__dirname, '..');
 
     const { execSync } = require('child_process');
@@ -100,9 +115,9 @@ async function getToken(tenantId, clientId, clientSecret) {
     });
 
     if (!response.ok) {
-        console.error('Failed to acquire token: ', response.status);
+        logger.error('Failed to acquire token: ', response.status);
         const error = await response.text();
-        console.error(error);
+        logger.error(error);
         throw new Error('Authentication failed');
     }
 
@@ -129,9 +144,9 @@ async function getCompanies(token, tenantId, environmentName) {
     });
 
     if (!response.ok) {
-        console.error('Failed to get companies: ', response.status);
+        logger.error('Failed to get companies: ', response.status);
         const error = await response.text();
-        console.error(error);
+        logger.error(error);
         throw new Error('Company list query failed');
     }
 
@@ -166,7 +181,7 @@ async function getModules(token, tenantId, environmentName, companyId, moduleId,
         apiUrl += `?$filter=${filters.join(" and ")}`;
     }
 
-    console.debug(`API: ${apiUrl}`);
+    logger.debug(`API: ${apiUrl}`);
 
     const response = await fetch(apiUrl, {
         method: 'GET',
@@ -177,9 +192,9 @@ async function getModules(token, tenantId, environmentName, companyId, moduleId,
     });
     
     if (!response.ok) {
-        console.error('Failed to get modules: ', response.status);
+        logger.error('Failed to get modules: ', response.status);
         const error = await response.text();
-        console.error(error);
+        logger.error(error);
         throw new Error('Module list query failed');
     }
 
@@ -196,9 +211,7 @@ async function confirmModule(token, tenantId, environmentName, companyId, module
     let checkValue = await getModules(token, tenantId, environmentName, companyId, moduleId);
 
     checkValue.forEach((module, idx) => {
-            const name = module.name;
-            const id = module.id;
-            console.debug(`**** ${idx + 1}. ${module.displayName} (ID: ${module.id})`);
+            logger.debug(`**** ${idx + 1}. ${module.displayName} (ID: ${module.id})`);
         });
 
     return checkValue.some(m => m.id === moduleId);
@@ -222,7 +235,7 @@ async function confirmModule(token, tenantId, environmentName, companyId, module
  */
 async function getInstallationStatus(token, tenantId, environmentName, companyId, operationId) {
     let apiUrl = `https://api.businesscentral.dynamics.com/v2.0/${tenantId}/${environmentName}/api/microsoft/automation/v2.0/companies(${companyId})/extensionDeploymentStatus`;
-    console.debug('API (getInstallationStatus)', apiUrl);
+    logger.debug('API (getInstallationStatus)', apiUrl);
 
     const response = await fetch(apiUrl, {
         method: 'GET',
@@ -233,16 +246,16 @@ async function getInstallationStatus(token, tenantId, environmentName, companyId
     });
 
     if (!response.ok) {
-        console.error('Failed to get extension deployments: ', response.status);
+        logger.error('Failed to get extension deployments: ', response.status);
         const error = await response.text();
-        console.error(error);
+        logger.error(error);
         throw new Error('Extension deployment status query failed');
     }
 
-    console.debug('API response (getInstallationStatus)');
+    //console.debug('API response (getInstallationStatus)');
     const data = await response.json();
     
-    console.debug(data);
+    //console.debug(data);
     return data.value;    
 }
 
@@ -287,7 +300,7 @@ async function createInstallationBookmark(token, tenantId, environmentName, comp
     // This means, when returning the POST, the return is object.systemId, when returning the GET, the return is object[0].systemId
 
     let apiUrl = `https://api.businesscentral.dynamics.com/v2.0/${tenantId}/${environmentName}/api/microsoft/automation/v2.0/companies(${companyId})/extensionUpload`;
-    console.debug('API (createInstallationBookmark)', apiUrl);
+    logger.debug('API (createInstallationBookmark)', apiUrl);
 
     // per: https://learn.microsoft.com/en-us/dynamics365/business-central/dev-itpro/administration/resources/dynamics_extensionupload
     if (!schedule || schedule.trim() === "") {
@@ -313,8 +326,8 @@ async function createInstallationBookmark(token, tenantId, environmentName, comp
     };
     
     const _debugBody = await JSON.stringify(body);
-    console.debug('Request body:');
-    console.debug(_debugBody);
+    logger.debug('Request body:');
+    logger.debug(_debugBody);
 
     const response = await fetch(apiUrl, {
         method: 'POST',
@@ -334,14 +347,14 @@ async function createInstallationBookmark(token, tenantId, environmentName, comp
             errorResponse = await response.json();
         } catch (e) {
             const raw = await response.text();
-            console.error('Non-JSON error response: ', raw);
+            logger.error('Non-JSON error response: ', raw);
             throw new Error('Extension slot creation failed with unknown format');
         }
 
-        console.error('BC API error response: ', JSON.stringify(errorResponse, null, 2));
+        logger.error('BC API error response: ', JSON.stringify(errorResponse, null, 2));
 
         if (status === 400 && errorResponse?.error?.code === "Internal_EntityWithSameKeyExists") {
-            console.warn('Extension upload already exists - retrieving existing record...');
+            logger.warn('Extension upload already exists - retrieving existing record...');
             const secondResponse = await fetch(apiUrl, {
                 method: 'GET',
                 headers: {
@@ -352,7 +365,7 @@ async function createInstallationBookmark(token, tenantId, environmentName, comp
             });
 
             if (secondResponse.ok) {
-                console.log('Found existing record; parsing and returning to routine');
+                logger.info('Found existing record; parsing and returning to routine');
                 const secondValue = await secondResponse.json();
                 if (Array.isArray(secondValue)) {
                     return secondValue.value[0];    // see internal note above
@@ -366,8 +379,8 @@ async function createInstallationBookmark(token, tenantId, environmentName, comp
     }
 
     const data = await response.json();
-    console.debug('(createInstallationBookmark) returning: ');
-    console.debug(data);
+    logger.debug('(createInstallationBookmark) returning: ');
+    logger.debug(data);
     return data;    
 }
 
@@ -383,20 +396,20 @@ async function createInstallationBookmark(token, tenantId, environmentName, comp
  */
 async function uploadInstallationFile(token, tenantId, environmentName, companyId, operationId, filePathAndName, odata_etag) {
     const apiUrl = `https://api.businesscentral.dynamics.com/v2.0/${tenantId}/${environmentName}/api/microsoft/automation/v2.0/companies(${companyId})/extensionUpload(${operationId})/extensionContent`;
-    console.debug('API (uploadInstallationFile): ', apiUrl);
-    console.debug('@odata.etag: ', odata_etag);
+    logger.debug('API (uploadInstallationFile): ', apiUrl);
+    logger.debug('@odata.etag: ', odata_etag);
 
     try {
         await fs.access(filePathAndName);
 
         const stats = await fs.stat(filePathAndName);
-        console.log(`File found: ${filePathAndName} (${stats.size} bytes)`);
+        logger.info(`File found: ${filePathAndName} (${stats.size} bytes)`);
 
         const fileBuffer = await fs.readFile(filePathAndName);
-        console.debug(`Prepared file buffer of ${stats.size} bytes from file`);
+        logger.info(`Prepared file buffer of ${stats.size} bytes from file`);
 
-        console.debug('Uploading file to: ', apiUrl);
-        console.debug('Headers:', {
+        logger.debug('Uploading file to: ', apiUrl);
+        logger.debug('Headers:', {
             'Authorization': '[REDACTED]',
             'Content-Type': 'application/octet-stream',
             'If-Match': odata_etag
@@ -415,12 +428,12 @@ async function uploadInstallationFile(token, tenantId, environmentName, companyI
         if (!response.ok) {
             const error = await response.text();
             const errorCode = response.status;
-            console.error('Upload failed: status code: ', errorCode);
-            console.error(`Upload failed [${response.status}]: ${error}`);
+            logger.error('Upload failed: status code: ', errorCode);
+            logger.error(`Upload failed [${response.status}]: ${error}`);
             throw new Error('File upload failed.');
         }
 
-        console.log('Upload successful of:', filePathAndName, 'with a status code of:', response.status);
+        logger.info('Upload successful of:', filePathAndName, 'with a status code of:', response.status);
 
         if (response.status === 204) {
             return true;
@@ -430,9 +443,9 @@ async function uploadInstallationFile(token, tenantId, environmentName, companyI
     }
     catch (err) {
         if (err.code === 'ENOENT') {
-            console.warn('File not found: ', filePathAndName);
+            logger.warn('File not found: ', filePathAndName);
         } else {
-            console.error('Unexpected error during upload: ', err);
+            logger.error('Unexpected error during upload: ', err);
         }
         throw err;
     }
@@ -440,11 +453,11 @@ async function uploadInstallationFile(token, tenantId, environmentName, companyI
 
 async function callNavUploadCommand(token, tenantId, environmentName, companyId, operationId, odata_etag) {
     const apiUrl = `https://api.businesscentral.dynamics.com/v2.0/${tenantId}/${environmentName}/api/microsoft/automation/v2.0/companies(${companyId})/extensionUpload(${operationId})/Microsoft.NAV.upload`;
-    console.debug('API (callNavUploadCommand): ', apiUrl);
-    console.debug('@odata.etag: ', odata_etag)
+    logger.debug('API (callNavUploadCommand): ', apiUrl);
+    logger.debug('@odata.etag: ', odata_etag)
 
     try {
-        console.log('Preparing to call Microsoft.NAV.upload');
+        logger.info('Preparing to call Microsoft.NAV.upload');
         let response = await fetch(apiUrl, {
             method: 'POST',
             headers: {
@@ -454,19 +467,19 @@ async function callNavUploadCommand(token, tenantId, environmentName, companyId,
             }
         });
 
-        console.log('Call to Microsoft.NAV.upload successful?  ¯\\_(ツ)_/¯  It\'s not like Microsoft tells us...');
+        logger.info('Call to Microsoft.NAV.upload successful?  ¯\\_(ツ)_/¯  It\'s not like Microsoft tells us...');
         if (!response.ok) {
-            console.error('Failed to call Microsoft.NAV.upload for deployment: ', response.status);
+            logger.error('Failed to call Microsoft.NAV.upload for deployment: ', response.status);
             if (response.status === 409) {
-                console.log('Wait a second, that was a 409; this means that the @odata.etag is stale, let me try to get another one');
+                logger.info('Wait a second, that was a 409; this means that the @odata.etag is stale, let me try to get another one');
                 let refreshCheck = await createInstallationBookmark(token, tenantId, environmentName, companyId);
-                console.log('Original odata.etag: ', odata_etag);
+                logger.info('Original odata.etag: ', odata_etag);
                 if (Array.isArray(refreshCheck)) {
                     odata_etag = refreshCheck[0]['@odata.etag'];
                 } else { 
                     odata_etag = refreshCheck['@odata.etag'];
                 }
-                console.log('Refreshed odata.etag:', odata_etag);
+                logger.info('Refreshed odata.etag:', odata_etag);
                 response = await fetch(apiUrl, {
                     method: 'POST',
                     headers: {
@@ -477,13 +490,13 @@ async function callNavUploadCommand(token, tenantId, environmentName, companyId,
                 });
             } else {
                 const error = await response.text();
-                console.error(error);
+                logger.error(error);
                 throw new Error('Extension upload call query failed');
             }
         }
-        console.debug('Made call to Microsoft.NAV.upload; response code: ', response.status);
+        logger.debug('Made call to Microsoft.NAV.upload; response code: ', response.status);
     } catch (err) {
-        console.error('Error during call: ', err.name, err.message);
+        logger.error('Error during call: ', err.name, err.message);
         throw err;
     }
 }
@@ -493,7 +506,7 @@ async function waitForResponse(token, tenantId, environmentName, companyId, oper
     const startTimeStamp = Date.now();
     let currentTimeStamp = Date.now();
 
-    console.log(`Waiting an initial 2 seconds before polling...`);
+    logger.info(`Waiting an initial 2 seconds before polling...`);
     await sleep(2);
 
     let manualBreak = false;
@@ -501,20 +514,20 @@ async function waitForResponse(token, tenantId, environmentName, companyId, oper
         let thisCheck = await getInstallationStatus(token, tenantId, environmentName, companyId, operationId);
         if (Array.isArray(thisCheck)) {
             if (thisCheck.length === 0) {
-                console.log('Received blank array back on extension installation status check; breaking');
-                console.log('(This usually means that the upload call failed, and/or there are no other upload records in this instance of Business Central.)');
+                logger.info('Received blank array back on extension installation status check; breaking');
+                logger.info('(This usually means that the upload call failed, and/or there are no other upload records in this instance of Business Central.)');
                 manualBreak = true;
             }
             else {
                 if (thisCheck[0].status !== 'InProgress') {
-                    console.log(`Received status '${thisCheck[0].status}' response; breaking`);
+                    logger.info(`Received status '${thisCheck[0].status}' response; breaking`);
                     manualBreak = true;
                 } else {
-                    console.log(`Received status '${thisCheck[0].status}'; continuing to wait another ${waitTime} seconds`);
+                    logger.info(`Received status '${thisCheck[0].status}'; continuing to wait another ${waitTime} seconds`);
                 }
             }
         }
-        console.debug(Date.now(), ': checked progress, result:', thisCheck[0].status);
+        logger.debug(Date.now(), ': checked progress, result:', thisCheck[0].status);
         if (!parseBool(manualBreak)) { await sleep(waitTime) };
         currentTimeStamp = Date.now();
     } while ((((currentTimeStamp - startTimeStamp) / 1000) < maxWaitTime) && !parseBool(manualBreak));
@@ -549,5 +562,6 @@ module.exports = {
     uploadInstallationFile,
     callNavUploadCommand,
     waitForResponse,
-    parseBool
+    parseBool,
+    logger
 }
