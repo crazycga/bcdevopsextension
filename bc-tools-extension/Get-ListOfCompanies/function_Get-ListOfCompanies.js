@@ -23,13 +23,13 @@ const extremeDebugMode = commonTools.parseBool(process.env.INPUT_EXTREMEDEBUGMOD
         logger.error('This is a logger.error command'.padStart(10));
         logger.info('');
         logger.info('');
-        logger.debug('process.cwd():', process.cwd());        // where the process was started
-        logger.debug('__dirname:', __dirname);                // where the current script file resides
+        logger.debug(`process.cwd(): ${process.cwd()}`);        // where the process was started
+        logger.debug(`__dirname: ${__dirname}`);                // where the current script file resides
 
         logger.debug('Enumerating parent:');
         fs.readdir('..', (err, files) => {
             if (err) {
-                logger.error('Error reading directory: ', err);
+                logger.error(`Error reading directory: ${err}`);
                 return;
             }
             logger.debug('Files in parent directory:');
@@ -41,7 +41,7 @@ const extremeDebugMode = commonTools.parseBool(process.env.INPUT_EXTREMEDEBUGMOD
         logger.debug('Enumerating current:');
         fs.readdir('.', (err, files) => {
             if (err) {
-                logger.error('Error reading directory: ', err);
+                logger.error(`Error reading directory: ${err}`);
                 return;
             }
             logger.debug('Files in parent directory:');
@@ -65,7 +65,7 @@ const extremeDebugMode = commonTools.parseBool(process.env.INPUT_EXTREMEDEBUGMOD
 
         logger.debug('**********************************************************');
         const expectedPath = path.resolve(__dirname, '../_common/CommonTools.js');
-        logger.debug('Trying to stat:', expectedPath);
+        logger.debug(`Trying to stat: ${expectedPath}`);
         try {
             fs.statSync(expectedPath);
             logger.debug('Found commonTools at expected path');
@@ -86,6 +86,6 @@ const extremeDebugMode = commonTools.parseBool(process.env.INPUT_EXTREMEDEBUGMOD
         });
     }
     catch (error) {
-        logger.error('Error: ', error.message);
+        logger.error(`Error: ${error.message}`);
     }
 })();

@@ -25,6 +25,6 @@ const excludeMicrosoft = process.env.INPUT_EXCLUDEMICROSOFT;
             logger.info(`${(idx + 1).toString().padStart(3)}. ${name.padEnd(60)} (Module ID: ${id}) v${version.padEnd(20)} (Package ID: ${pid})`);
         });
     } catch (error) {
-        logger.error('Error: ', error.message);
+        logger.error(`Error: ${error.message}`);
     }
 })();

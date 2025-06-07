@@ -40,8 +40,8 @@ const maxTimeout = parseInt(process.env.INPUT_MAXPOLLINGTIMEOUT);
             extId = test.systemId;
             odata_etag = test['@odata.etag'];
         }
-        logger.debug('>>>>>>>>>> ExtId (the bookmark): ', extId);
-        logger.debug('>>>>>>>>>> @odata.etag: ', odata_etag);
+        logger.debug(`>>>>>>>>>> ExtId (the bookmark): ${extId}`);
+        logger.debug(`>>>>>>>>>> @odata.etag: ${odata_etag}`);
         logger.debug('');
         logger.info('>>>>>>>>>> uploadInstallationFile');
         let resulting = await commonTools.uploadInstallationFile(token, tenantId, environmentName, companyId, extId, filePath, odata_etag);
@@ -56,6 +56,6 @@ const maxTimeout = parseInt(process.env.INPUT_MAXPOLLINGTIMEOUT);
         logger.info('>>>>>>>>>> done');
     }
     catch (error) {
-        logger.error('Error: ', error.message);
+        logger.error(`Error: ${error.message}`);
     }
 })();
