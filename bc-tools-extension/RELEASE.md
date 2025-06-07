@@ -1,11 +1,13 @@
 # Release Notes - BCBuildTasks Extension
 
+- [Version: 0.1.7](#version-017)
+- [Version: 0.1.6](#version-016)
 - [Version: 0.1.5](#version-015)
     + [Feature Release](#feature-release)
   * [New Features](#new-features)
     + [1. **EGGetBCCompanies**](#1-eggetbccompanies)
-    + [2. EGGetBCModules](#2-eggetbcmodules)
-    + [3. EGDeployBCModule](#3-egdeploybcmodule)
+    + [2. **EGGetBCModules**](#2-eggetbcmodules)
+    + [3. **EGDeployBCModule**](#3-egdeploybcmodule)
 - [Version: 0.1.4](#version-014)
     + [Improvement Release](#improvement-release)
   * [New Features](#new-features-1)
@@ -23,7 +25,25 @@
   * [Example Pipeline Usage](#example-pipeline-usage)
   * [Known Limitations](#known-limitations)
   * [Support](#support)
-  
+
+# Version: 0.1.7
+
+## Fixes
+
+- Fixed [#26](https://github.com/crazycga/bcdevopsextension/issues/26): Publish command not working correctly; should be fixed now.  
+- Timeout command wasn't working properly, that has been fixed as well.  
+
+## Improvements
+
+- Added developer notes to the repo README.md.  
+- Added possible errors and causal factors to README.md and VS Marketplace page.
+- Prettified some of the output logs for `EGGetBCCompanies` and `EGGetBCModules`.
+- Cleaned up some logging in `EGDeployBCModule`.
+
+# Version: 0.1.6
+
+- Addresses bug [#26](https://github.com/crazycga/bcdevopsextension/issues/26): Publish command not working correctly
+
 # Version: 0.1.5
 
 **Release Date:** 2025-06-03
