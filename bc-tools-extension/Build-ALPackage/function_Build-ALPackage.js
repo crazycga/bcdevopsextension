@@ -81,6 +81,8 @@ try {
 }
 
 // build arguments for ALC
+outputFile = path.join(outputDirectory, entireAppName);
+logger.debug(`Specifying output as ${outputFile}`);
 logger.debug(`Building Windows array?: ${isWindows}`);
 const args = isWindows 
 ? [
