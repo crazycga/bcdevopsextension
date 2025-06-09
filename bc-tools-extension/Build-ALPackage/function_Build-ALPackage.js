@@ -2,7 +2,6 @@ const { spawn } = require('child_process');
 const path = require('path');
 const os = require('os');
 const fs = require('fs');
-const commonTools = require(path.join(__dirname, '_common', 'CommonTools.js'));
 const { logger } = require(path.join(__dirname, '_common', 'CommonTools.js'));
 
 // collect variables from input
@@ -87,12 +86,12 @@ logger.debug(`Building Windows array?: ${isWindows}`);
 const args = isWindows 
 ? [
     `/project:${baseProjectDirectory}`,
-    `/out:${outputDirectory}`,
+    `/out:${outputFile}`,
     `/packageCachePath:${packagesDirectory}`
 ]
 : [
     '--project', baseProjectDirectory,
-    '--out', outputDirectory,
+    '--out', outputFile,
     '--packagecachepath', packagesDirectory
 ];
 
