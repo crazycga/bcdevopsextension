@@ -55,6 +55,12 @@
     }
   ],
   "execution": {
+    "Node16": {
+      "target": "function_Build-ALPackage.js"
+    },
+    "Node20_1": {
+      "target": "function_Build-ALPackage.js"
+    },    
     "PowerShell3": {
       "target": "wrapper_Build-ALPackage.ps1"
     }
