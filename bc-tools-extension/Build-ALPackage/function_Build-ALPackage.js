@@ -7,10 +7,10 @@ const { logger } = require(path.join(__dirname, '_common', 'CommonTools.js'));
 
 // collect variables from input
 const entireAppName = process.env.INPUT_ENTIREAPPNAME;
-const baseProjectDirectory = process.env.INPUT_BASEPROJECTDIRECTORY;
-const packagesDirectory = process.env.INPUT_PACKAGESDIRECTORY;
-const outputDirectory = process.env.INPUT_OUTPUTDIRECTORY;
-const alcPath = process.env.INPUT_ALEXEPATH;
+const baseProjectDirectory = process.env.INPUT_PROJECTPATH;
+const packagesDirectory = process.env.INPUT_PACKAGECACHEPATH;
+const outputDirectory = process.env.INPUT_OUTAPPFOLDER;
+const alcPath = process.env.INPUT_ALEXEPATHFOLDER;
 
 logger.info('Calling Build-ALPackage with the following parameters:');
 logger.info('EntireAppName'.padStart(2).padEnd(30) + entireAppName);
@@ -35,12 +35,19 @@ const isWindows = os.platform() === "win32";
 logger.debug(`isWindows: ${isWindows}`);
 logger.debug(`Working directory: ${process.cwd()}`);
 
-
 // check for existence and execution permissions on ALC
 logger.debug('Checking for existence of ALC at target location');
 if (!fs.existsSync(alcPath)) {
-    logger.error(`ALC[.EXE] not found at ${alcPath}; terminating...`);
+    logger.error(`ALC[.EXE] PATH not found at ${alcPath}; terminating...`);
     throw new Error(`ALC missing at path ${alcPath}`);
+}
+
+if (!alcPath.toLowerCase().endsWith(isWindows ? 'alc.exe' : 'alc')) {
+    alcReference = path.join(alcPath, isWindows ? 'alc.exe' : 'alc');
+    logger.debug(`Modified ALC path to include the executable: ${alcReference}`);
+} else {
+    alcReference = alcPath;
+    logger.debug(`Using ALC path that includes the executable: ${alcReference}`);
 }
 
 try {
@@ -90,7 +97,7 @@ const args = isWindows
 // attempt execution of ALC
 logger.info(`Executing ALC with args:\n${[alcPath, ...args].map(x => `"${x}"`).join(' ')}`);
 
-const proc = spawn(alcPath, args, { stdio: 'inherit' });
+const proc = spawn(alcReference, args, { stdio: 'inherit' });
 
 proc.on('error', (err) => {
     logger.error(`Spawn error: ${err.message}`);
