@@ -13,7 +13,8 @@ Write-Host "Copying _common contents to:"
 $paths = @(
     "./Get-ListOfCompanies",
     "./Get-ListOfModules",
-    "./Publish-BCModuleToTenant"
+    "./Publish-BCModuleToTenant",
+    "./Build-ALPackage"
 )
 
 foreach($path in $paths) {
