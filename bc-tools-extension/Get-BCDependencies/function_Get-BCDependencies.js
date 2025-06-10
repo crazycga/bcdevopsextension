@@ -5,7 +5,7 @@ const fs = require('fs');
 const { PassThrough } = require('stream');
 const { logger } = require(path.join(__dirname, '_common', 'CommonTools.js'));
 const { usesUndici } = require(path.join(__dirname, '_common', 'CommonTools.js'));
-const { fetch } = usesUndici();
+const { fetch } = commonTools.usesUndici();
 
 (async () => {
     // collect variables from input
