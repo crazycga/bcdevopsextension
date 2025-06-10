@@ -79,6 +79,12 @@
     }    
   ],
   "execution": {
+    "Node16": {
+      "target": "function_Get-BCDependencies.js"
+    },
+    "Node20_1": {
+      "target": "function_Get-BCDependencies.js"
+    },    
     "PowerShell3": {
       "target": "wrapper_Get-BCDependencies.ps1"
     }
