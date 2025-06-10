@@ -15,7 +15,8 @@ $paths = @(
     "./Get-ListOfModules",
     "./Publish-BCModuleToTenant",
     "./Build-ALPackage",
-    "./Get-BCDependencies"
+    "./Get-BCDependencies",
+    "./Get-VSIXCompiler"
 )
 
 foreach($path in $paths) {
