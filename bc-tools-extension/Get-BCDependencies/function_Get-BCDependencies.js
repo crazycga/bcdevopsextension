@@ -7,7 +7,7 @@ const { logger } = require(path.join(__dirname, '_common', 'CommonTools.js'));
 const { usesUndici } = require(path.join(__dirname, '_common', 'CommonTools.js'));
 const { fetch } = usesUndici();
 
-async( () => {
+(async () => {
     // collect variables from input
     const tenantId = process.env.INPUT_TENANTID;
     const environmentName = process.env.INPUT_ENVIRONMENTNAME || 'sandbox';
