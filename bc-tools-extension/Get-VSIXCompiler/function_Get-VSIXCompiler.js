@@ -2,15 +2,36 @@ const { spawn } = require('child_process');
 const path = require('path');
 const os = require('os');
 const fs = require('fs');
+const fsp = require('fs/promises');
 const { PassThrough } = require('stream');
-const { usesUndici, logger, parseBool, getToken } = require(path.join(__dirname, '_common', 'CommonTools.js'));
+const { usesUndici, logger, parseBool, getToken, normalizePath } = require(path.join(__dirname, '_common', 'CommonTools.js'));
 const fetch = usesUndici();
 const crypto = require('crypto');
 const { pipeline } = require('stream/promises');
 
+// helper function to find the compiler (can allow an array in targetname)
+async function findCompiler(dir, targetname) {
+    const entries = await fsp.readdir(dir, { withFileTypes: true });
+
+    for (const entry of entries) {
+        const fullPath = path.join(dir, entry.name.toLowerCase());
+
+        const match = Array.isArray(targetname) ? targetname.some(t => fullPath.includes(t.toLowerCase())) : fullPath.includes(targetname.toLowerCase());
+        
+        if (entry.isDirectory()) {
+            const result = await findCompiler(fullPath, targetname);
+            if (result) return result;
+        } else if (match) {
+            return fullPath;
+        }
+    }
+    return null;
+}
+
+// main function of script
 (async () => {
     // collect variables from input
-    const downloadDirectory = process.env.INPUT_DOWNLOADDIRECTORY;
+    const downloadDirectory = normalizePath(process.env.INPUT_DOWNLOADDIRECTORY);
     const downloadVersion = process.env.INPUT_VERSION;
 
     logger.info('Calling Get-VSIXCompiler with the following parameters:');
@@ -176,4 +197,18 @@ const { pipeline } = require('stream/promises');
     logger.info(`Extracting ${downloadFilename} to ${extractTo}`);
     await fs.createReadStream(downloadFilename).pipe(unzipper.Extract( {path: extractTo })).promise();
     logger.info(`Extracted ${downloadFilename} to ${extractTo}`);
+
+    // find alc / alc.exe and echo results
+    
+    const expectedCompilerName = isWindows ? 'alc.exe' : 'alc';
+    logger.debug(`Searching for compiler ${expectedCompilerName}`);
+    let actualALEXE = await findCompiler(extractTo, expectedCompilerName);
+
+    if (actualALEXE) {
+        logger.info(`Found compiler '${expectedCompilerName}' at '${actualALEXE}`);
+        logger.info(`##vso[task.setvariable variable=alVersion;isOutput=true]${version}`);
+        logger.info(`Set pipeline variable 'alVersion' to ${version}`);
+        logger.info(`##vso[task.setvariable variable=alPath;isOutput=true]${actualALEXE}`);
+        logger.info(`Set pipeline variable 'alPath' to ${actualALEXE}`);
+    }
 })();

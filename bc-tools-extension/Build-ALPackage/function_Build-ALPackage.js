@@ -2,14 +2,14 @@ const { spawn } = require('child_process');
 const path = require('path');
 const os = require('os');
 const fs = require('fs');
-const { logger } = require(path.join(__dirname, '_common', 'CommonTools.js'));
+const { logger, normalizePath } = require(path.join(__dirname, '_common', 'CommonTools.js'));
 
 // collect variables from input
 const entireAppName = process.env.INPUT_ENTIREAPPNAME;
-const baseProjectDirectory = process.env.INPUT_PROJECTPATH;
-const packagesDirectory = process.env.INPUT_PACKAGECACHEPATH;
-const outputDirectory = process.env.INPUT_OUTAPPFOLDER;
-const alcPath = process.env.INPUT_ALEXEPATHFOLDER;
+const baseProjectDirectory = normalizePath(process.env.INPUT_PROJECTPATH);
+const packagesDirectory = normalizePath(process.env.INPUT_PACKAGECACHEPATH);
+const outputDirectory = normalizePath(process.env.INPUT_OUTAPPFOLDER);
+const alcPath = normalizePath(process.env.INPUT_ALEXEPATHFOLDER);
 
 logger.info('Calling Build-ALPackage with the following parameters:');
 logger.info('EntireAppName'.padStart(2).padEnd(30) + entireAppName);

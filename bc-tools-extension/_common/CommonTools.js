@@ -35,6 +35,11 @@ if (parseBool(testMode)) {
     logger.info(`Invocation received with TestMode: ${testMode}`);
 }
 
+// sanitize file paths and names, etc.
+function normalizePath(p) {
+    return p.replace(/\\/g, '/');
+}
+
 // this module uses undici for fetching specifically because the call to Microsoft.NAV.upload will return malformed and node-fetch can't parse it
 let fetch = null;
 
@@ -590,5 +595,6 @@ module.exports = {
     waitForResponse,
     parseBool,
     logger,
-    usesUndici
+    usesUndici,
+    normalizePath
 }

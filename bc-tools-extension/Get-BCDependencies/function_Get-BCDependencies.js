@@ -3,7 +3,7 @@ const path = require('path');
 const os = require('os');
 const fs = require('fs');
 const { PassThrough } = require('stream');
-const { usesUndici, logger, parseBool, getToken } = require(path.join(__dirname, '_common', 'CommonTools.js'));
+const { usesUndici, logger, parseBool, getToken, normalizePath } = require(path.join(__dirname, '_common', 'CommonTools.js'));
 const fetch = usesUndici();
 
 (async () => {
@@ -12,8 +12,8 @@ const fetch = usesUndici();
     const   environmentName = process.env.INPUT_ENVIRONMENTNAME || 'sandbox';
     const   clientId = process.env.INPUT_CLIENTID;
     const   clientSecret = process.env.INPUT_CLIENTSECRET;
-    let     pathToAppJson = process.env.INPUT_PATHTOAPPJSON;
-    const   pathToPackagesDirectory = process.env.INPUT_PATHTOPACKAGESDIRECTORY;
+    let     pathToAppJson = normalizePath(process.env.INPUT_PATHTOAPPJSON);
+    const   pathToPackagesDirectory = normalizePath(process.env.INPUT_PATHTOPACKAGESDIRECTORY);
     const   testLoginOnly = process.env.INPUT_TESTLOGINONLY;
     const   skipDefaultDependencies = process.env.INPUT_SKIPDEFAULTDEPENDENCIES;
 
