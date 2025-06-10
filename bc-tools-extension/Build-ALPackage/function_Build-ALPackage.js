@@ -90,9 +90,9 @@ const args = isWindows
     `/packageCachePath:${packagesDirectory}`
 ]
 : [
-    '--project', baseProjectDirectory,
-    '--out', outputFile,
-    '--packagecachepath', packagesDirectory
+    `/project:${baseProjectDirectory}`,
+    `/out:${outputFile}`,
+    `/packageCachePath:${packagesDirectory}`
 ];
 
 // attempt execution of ALC
