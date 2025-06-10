@@ -589,5 +589,6 @@ module.exports = {
     callNavUploadCommand,
     waitForResponse,
     parseBool,
-    logger
+    logger,
+    usesUndici
 }

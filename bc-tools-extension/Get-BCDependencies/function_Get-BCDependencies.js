@@ -3,20 +3,19 @@ const path = require('path');
 const os = require('os');
 const fs = require('fs');
 const { PassThrough } = require('stream');
-const { logger } = require(path.join(__dirname, '_common', 'CommonTools.js'));
-const { usesUndici } = require(path.join(__dirname, '_common', 'CommonTools.js'));
-const { fetch } = usesUndici;
+const { usesUndici, logger, parseBool, getToken } = require(path.join(__dirname, '_common', 'CommonTools.js'));
+const fetch = usesUndici();
 
 (async () => {
     // collect variables from input
-    const tenantId = process.env.INPUT_TENANTID;
-    const environmentName = process.env.INPUT_ENVIRONMENTNAME || 'sandbox';
-    const clientId = process.env.INPUT_CLIENTID;
-    const clientSecret = process.env.INPUT_CLIENTSECRET;
-    const pathToAppJson = process.env.INPUT_PATHTOAPPJSON;
-    const pathToPackagesDirectory = process.env.INPUT_PATHTOPACKAGESDIRECTORY;
-    const testLoginOnly = process.env.INPUT_TESTLOGINONLY;
-    const skipDefaultDependencies = process.env.INPUT_SKIPDEFAULTDEPENDENCIES;
+    const   tenantId = process.env.INPUT_TENANTID;
+    const   environmentName = process.env.INPUT_ENVIRONMENTNAME || 'sandbox';
+    const   clientId = process.env.INPUT_CLIENTID;
+    const   clientSecret = process.env.INPUT_CLIENTSECRET;
+    let     pathToAppJson = process.env.INPUT_PATHTOAPPJSON;
+    const   pathToPackagesDirectory = process.env.INPUT_PATHTOPACKAGESDIRECTORY;
+    const   testLoginOnly = process.env.INPUT_TESTLOGINONLY;
+    const   skipDefaultDependencies = process.env.INPUT_SKIPDEFAULTDEPENDENCIES;
 
     logger.info('Calling Get-BCDependencies with the following parameters:');
     logger.info('TenantId'.padStart(2).padEnd(30) + tenantId);
@@ -45,9 +44,9 @@ const { fetch } = usesUndici;
 
     // authenticate and break if "TestLoginOnly"
     logger.info('>>>>>>>>>> getToken');
-    const token = await commonTools.getToken(tenantId, clientId, clientSecret);
+    const token = await getToken(tenantId, clientId, clientSecret);
 
-    if (commonTools.parseBool(testLoginOnly)) {
+    if (parseBool(testLoginOnly)) {
         logger.info('Authenticated correctly; routine invoked with TestLoginOnly; terminating gracefully');
         process.exit(0);
     } else {
@@ -88,7 +87,7 @@ const { fetch } = usesUndici;
     }
 
     // conditionally inject default dependencies
-    if (commonTools.parseBool(skipDefaultDependencies) === false) {
+    if (parseBool(skipDefaultDependencies) === false) {
         logger.debug('Adding dependencies; building list');
         const baseDependencies = [
             {
@@ -177,8 +176,15 @@ const { fetch } = usesUndici;
                 throw new Error(`Download failed for ${dep.id} (${dep.name})`);
             }
 
-            const buffer = Buffer.from(await response.arrayBuffer());
+            const contentDisposition = response.headers.get('content-disposition');
             let filename = path.join(pathToPackagesDirectory, `${dep.name}.app`);
+            if (contentDisposition) {
+                const match = /filename\*?=(?:UTF-8''|")?([^;"\n]+)/i.exec(contentDisposition);
+                if (match && match[1]) {
+                    filename = path.join(pathToPackagesDirectory, decodeURIComponent(match[1].replace(/"/g, '')));
+                }
+            }
+            const buffer = Buffer.from(await response.arrayBuffer());
             fs.writeFileSync(filename, buffer);
             logger.debug(`File saved: ${filename}`);
         } catch (err) {
