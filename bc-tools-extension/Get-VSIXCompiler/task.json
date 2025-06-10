@@ -31,8 +31,11 @@
     }
   ],
   "execution": {
-    "PowerShell3": {
-      "target": "wrapper_Get-VSIXCompiler.ps1"
+    "Node16": {
+      "target": "function_Get-VSIXCompiler.js"
+    },
+    "Node20_1": {
+      "target": "function_Get-VSIXCompiler.js"
     }
   }
 }

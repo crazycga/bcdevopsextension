@@ -48,15 +48,18 @@
     {
       "name": "ALEXEPathFolder",
       "type": "string",
-      "label": "AL.EXE Path",
+      "label": "ALC Path",
       "defaultValue": "",
       "required": true,
       "helpMarkDown": "Path to the ALC.EXE folder, one folder above.  (The next folder down is 'win32'.)"
     }
   ],
   "execution": {
-    "PowerShell3": {
-      "target": "wrapper_Build-ALPackage.ps1"
+    "Node16": {
+      "target": "function_Build-ALPackage.js"
+    },
+    "Node20_1": {
+      "target": "function_Build-ALPackage.js"
     }
   }
 }

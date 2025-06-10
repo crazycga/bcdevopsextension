@@ -1,5 +1,6 @@
 # Release Notes - BCBuildTasks Extension
 
+- [Version: 0.1.8](#version-018)
 - [Version: 0.1.7](#version-017)
 - [Version: 0.1.6](#version-016)
 - [Version: 0.1.5](#version-015)
@@ -25,6 +26,10 @@
   * [Example Pipeline Usage](#example-pipeline-usage)
   * [Known Limitations](#known-limitations)
   * [Support](#support)
+
+# Version: 0.1.8
+
+- Addresses [#16](https://github.com/crazycga/bcdevopsextension/issues/16): Platform agnosticism; moving towards it.  This update moves almost all Powershell code to use JavaScript, which is closer to native functionality and doesn't require the (soon to be deprecated, maybe?) VstsTaskSdk for Powershell.
 
 # Version: 0.1.7
 

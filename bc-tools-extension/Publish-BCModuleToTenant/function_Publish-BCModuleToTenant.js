@@ -1,13 +1,13 @@
 const path = require('path');
 const commonTools = require(path.join(__dirname, '_common', 'CommonTools.js'));
-const { logger } = require(path.join(__dirname, '_common', 'CommonTools.js'));
+const { logger, normalizePath } = require(path.join(__dirname, '_common', 'CommonTools.js'));
 
 const tenantId = process.env.INPUT_TENANTID;
 const clientId = process.env.INPUT_CLIENTID;
 const clientSecret = process.env.INPUT_CLIENTSECRET;
 const environmentName = process.env.INPUT_ENVIRONMENTNAME;
 const companyId = process.env.INPUT_COMPANYID;
-const filePath = process.env.INPUT_APPFILEPATH;
+const filePath = normalizePath(process.env.INPUT_APPFILEPATH);
 const skipPolling = commonTools.parseBool(process.env.INPUT_SKIPPOLLING);
 const pollingFrequency = parseInt(process.env.INPUT_POLLINGFREQUENCY);
 const maxTimeout = parseInt(process.env.INPUT_MAXPOLLINGTIMEOUT);

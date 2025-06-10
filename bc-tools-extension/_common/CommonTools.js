@@ -35,27 +35,40 @@ if (parseBool(testMode)) {
     logger.info(`Invocation received with TestMode: ${testMode}`);
 }
 
-// this module uses undici for fetching specifically because the call to Microsoft.NAV.upload will return malformed and node-fetch can't parse it
-let fetch;
-try {
-    fetch = require('undici').fetch;
-} catch (_) {
-    logger.warn("'undici' not found. Attempting to install...");
-    const projectRoot = path.resolve(__dirname, '..');
-
-    const { execSync } = require('child_process');
-    try {
-        execSync('npm install undici --no-progress --loglevel=warn', {
-            cwd: projectRoot,
-            stdio: 'inherit'
-        });
-        fetch = require('undici').fetch;
-    } catch (installErr) {
-        console.error("Auto-install of 'undici' failed. Aborting.");
-        console.error(installErr);
-        process.exit(1);
-    }
+// sanitize file paths and names, etc.
+function normalizePath(p) {
+    return p.replace(/\\/g, '/');
 }
+
+// this module uses undici for fetching specifically because the call to Microsoft.NAV.upload will return malformed and node-fetch can't parse it
+let fetch = null;
+
+function usesUndici() {
+    if (!fetch) {
+        try {
+            fetch = require('undici').fetch;
+        } catch (_) {
+            logger.warn("'undici' not found. Attempting to install...");
+            const projectRoot = path.resolve(__dirname, '..');
+
+            const { execSync } = require('child_process');
+            try {
+                execSync('npm install undici --no-progress --loglevel=warn', {
+                    cwd: projectRoot,
+                    stdio: 'inherit'
+                });
+                fetch = require('undici').fetch;
+            } catch (installErr) {
+                console.error("Auto-install of 'undici' failed. Aborting.");
+                console.error(installErr);
+                process.exit(1);
+            }
+        }
+    }
+    return fetch;
+}
+
+
 
 /**
  * An obfuscation routine to block the client_secret in token request bodies
@@ -109,6 +122,7 @@ function parseBool(val) {
  * @returns {string} a bearer token, if successful
  */
 async function getToken(tenantId, clientId, clientSecret) {
+    usesUndici();
     const tokenUrl = `https://login.microsoftonline.com/${tenantId}/oauth2/v2.0/token`;
 
     const params = new URLSearchParams();
@@ -144,6 +158,7 @@ async function getToken(tenantId, clientId, clientSecret) {
  * @returns {object} a Business Central object, list of companies
  */
 async function getCompanies(token, tenantId, environmentName) {
+    usesUndici();
     const apiUrl = `https://api.businesscentral.dynamics.com/v2.0/${tenantId}/${environmentName}/api/v2.0/companies`;
 
     const response = await fetch(apiUrl, {
@@ -176,6 +191,7 @@ async function getCompanies(token, tenantId, environmentName) {
  * @returns {object} a Business Central object, list of modules installed
  */
 async function getModules(token, tenantId, environmentName, companyId, moduleId, excludeMicrosoft) {
+    usesUndici();
     let apiUrl = `https://api.businesscentral.dynamics.com/v2.0/${tenantId}/${environmentName}/api/microsoft/automation/v2.0/companies(${companyId})/extensions`;
 
     const filters = [];
@@ -245,6 +261,7 @@ async function confirmModule(token, tenantId, environmentName, companyId, module
  * @returns {object?} if successful, a response object; status is at .status
  */
 async function getInstallationStatus(token, tenantId, environmentName, companyId, operationId) {
+    usesUndici();
     let apiUrl = `https://api.businesscentral.dynamics.com/v2.0/${tenantId}/${environmentName}/api/microsoft/automation/v2.0/companies(${companyId})/extensionDeploymentStatus`;
     logger.debug(`API (getInstallationStatus) ${apiUrl}`);
 
@@ -310,6 +327,7 @@ async function createInstallationBookmark(token, tenantId, environmentName, comp
     //
     // This means, when returning the POST, the return is object.systemId, when returning the GET, the return is object[0].systemId
 
+    usesUndici();
     let apiUrl = `https://api.businesscentral.dynamics.com/v2.0/${tenantId}/${environmentName}/api/microsoft/automation/v2.0/companies(${companyId})/extensionUpload`;
     logger.debug(`API (createInstallationBookmark) ${apiUrl}`);
 
@@ -406,6 +424,7 @@ async function createInstallationBookmark(token, tenantId, environmentName, comp
  * @returns {boolean} true if successful; false if not
  */
 async function uploadInstallationFile(token, tenantId, environmentName, companyId, operationId, filePathAndName, odata_etag) {
+    usesUndici();
     const apiUrl = `https://api.businesscentral.dynamics.com/v2.0/${tenantId}/${environmentName}/api/microsoft/automation/v2.0/companies(${companyId})/extensionUpload(${operationId})/extensionContent`;
     logger.debug(`API (uploadInstallationFile): ${apiUrl}`);
     logger.debug(`@odata.etag: ${odata_etag}`);
@@ -463,6 +482,7 @@ async function uploadInstallationFile(token, tenantId, environmentName, companyI
 }
 
 async function callNavUploadCommand(token, tenantId, environmentName, companyId, operationId, odata_etag) {
+    usesUndici();
     const apiUrl = `https://api.businesscentral.dynamics.com/v2.0/${tenantId}/${environmentName}/api/microsoft/automation/v2.0/companies(${companyId})/extensionUpload(${operationId})/Microsoft.NAV.upload`;
     logger.debug(`API (callNavUploadCommand): ${apiUrl}`);
     logger.debug(`@odata.etag: ${odata_etag}`)
@@ -574,5 +594,7 @@ module.exports = {
     callNavUploadCommand,
     waitForResponse,
     parseBool,
-    logger
+    logger,
+    usesUndici,
+    normalizePath
 }
