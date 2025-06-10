@@ -9,24 +9,40 @@ const fetch = usesUndici();
 const crypto = require('crypto');
 const { pipeline } = require('stream/promises');
 
-// helper function to find the compiler (can allow an array in targetname)
+// Can accept either a string or array in `targetname`
 async function findCompiler(dir, targetname) {
-    const entries = await fsp.readdir(dir, { withFileTypes: true });
+    let entries;
+    try {
+        entries = await fsp.readdir(dir, { withFileTypes: true });
+        logger.debug(`Searching directory: ${dir}`);
+    } catch (err) {
+        if (err.code === 'ENOENT') {
+            // Skip if directory doesn't exist
+            logger.debug(`Skipping missing directory: ${dir}`);
+            return null;
+        } else {
+            // Unexpected error — surface it
+            throw err;
+        }
+    }
 
     for (const entry of entries) {
-        const fullPath = path.join(dir, entry.name.toLowerCase());
+        const fullPath = path.join(dir, entry.name);
 
-        const match = Array.isArray(targetname) ? targetname.some(t => fullPath.includes(t.toLowerCase())) : fullPath.includes(targetname.toLowerCase());
-        
         if (entry.isDirectory()) {
             const result = await findCompiler(fullPath, targetname);
             if (result) return result;
-        } else if (match) {
-            return fullPath;
+        } else {
+            const name = entry.name.toLowerCase();
+            const matches = Array.isArray(targetname) ? targetname.some(t => name.includes(t.toLowerCase())) : name.includes(targetname.toLowerCase());
+            if (matches) {
+                return fullPath;
+            }
         }
     }
     return null;
 }
+
 
 // main function of script
 (async () => {
