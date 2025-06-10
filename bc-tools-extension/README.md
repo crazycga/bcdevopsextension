@@ -22,17 +22,23 @@
 
 ## Overview
 
-**WINDOWS AGENTS ONLY**
+**2025-06-10 Version 0.1.8: NO LONGER WINDOWS ONLY!**
 
-This Azure DevOps extension provides build pipeline tasks for Microsoft Dynamics 365 Business Central AL projects. It enables full pipeline-based compilation, dependency acquisition, and VSIX compiler management using custom PowerShell-backed tasks.
+*Proud to announce that this extension is NO LONGER Windows agent dependent!!!*
 
-**This extension is only usable on Windows-based agents**
+This Azure DevOps extension provides build pipeline tasks for Microsoft Dynamics 365 Business Central AL projects. It enables full pipeline-based compilation, dependency acquisition, and VSIX compiler management using custom tasks.
+
+**This extension is usable on both Ubuntu and Windows based agents**
 
 [![main-build](https://github.com/crazycga/bcdevopsextension/actions/workflows/mainbuild.yml/badge.svg?branch=main)](https://github.com/crazycga/bcdevopsextension/actions/workflows/mainbuild.yml)
 
-[![main-build](https://github.com/crazycga/bcdevopsextension/actions/workflows/mainbuild.yml/badge.svg?branch=dev_trunk)](https://github.com/crazycga/bcdevopsextension/actions/workflows/mainbuild.yml)
+[![dev-trunk](https://github.com/crazycga/bcdevopsextension/actions/workflows/mainbuild.yml/badge.svg?branch=dev_trunk)](https://github.com/crazycga/bcdevopsextension/actions/workflows/mainbuild.yml)
 
 ## Features
+
+* **Platform Independent**
+
+  * Operates on both Ubuntu and Windows agents
 
 * ✅ **Get AL Compiler**
 
@@ -161,7 +167,7 @@ You want to provide this user with the out-of-the-box permission set `EXTEN. MGT
 
 **Notes:**
 
-If not using the `alVersion` variable from above, the system places the expanded archive in the `$(DownloadDirectory)\expanded\extension\bin` folder.  (Technically it then goes one level lower, to the `win32` folder.)
+If not using the `alVersion` variable from above, the system places the expanded archive in the `$(DownloadDirectory)\expanded\extension\bin` folder.  (Technically it then goes one level lower, to the `win32` folder or the `linux` folder.)
 
 ### 2. Get AL Dependencies (`EGGetALDependencies`)
 

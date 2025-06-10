@@ -29,7 +29,7 @@
 
 # Version: 0.1.8
 
-- Addresses [#16](https://github.com/crazycga/bcdevopsextension/issues/16): Platform agnosticism; moving towards it.  This update moves almost all Powershell code to use JavaScript, which is closer to native functionality and doesn't require the (soon to be deprecated?) VstsTaskSdk for Powershell.
+- Addresses [#16](https://github.com/crazycga/bcdevopsextension/issues/16): Platform agnosticism; moving towards it.  This update moves almost all Powershell code to use JavaScript, which is closer to native functionality and doesn't require the (soon to be deprecated, maybe?) VstsTaskSdk for Powershell.
 
 # Version: 0.1.7
 
