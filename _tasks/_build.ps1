@@ -14,7 +14,8 @@ $paths = @(
     "./Get-ListOfCompanies",
     "./Get-ListOfModules",
     "./Publish-BCModuleToTenant",
-    "./Build-ALPackage"
+    "./Build-ALPackage",
+    "./Get-BCDependencies"
 )
 
 foreach($path in $paths) {
