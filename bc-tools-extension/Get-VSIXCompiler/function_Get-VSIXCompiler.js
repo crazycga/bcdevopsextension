@@ -117,7 +117,6 @@ async function findCompiler(baseDir, isWindows) {
     logger.debug(`JSON body: ${JSON.stringify(jsonRawPrototype)}`);
 
     let versionResult;
-
     try {
         const versionResponse = await fetch(apiUrl, {
             method: 'POST',
