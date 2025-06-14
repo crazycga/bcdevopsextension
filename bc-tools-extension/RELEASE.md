@@ -1,5 +1,6 @@
 # Release Notes - BCBuildTasks Extension
 
+- [Version: 0.1.9](#version-019)
 - [Version: 0.1.8](#version-018)
 - [Version: 0.1.7](#version-017)
 - [Version: 0.1.6](#version-016)
@@ -26,6 +27,9 @@
   * [Example Pipeline Usage](#example-pipeline-usage)
   * [Known Limitations](#known-limitations)
   * [Support](#support)
+
+# Version: 0.1.9
+- Addresses [#31](https://github.com/crazycga/bcdevopsextension/issues/31): ```EGGetALCompiler``` returning incorrect value.  This update addresses this particular bug, having refactored the search / walk algorithm to find the compiler.
 
 # Version: 0.1.8
 

@@ -10,37 +10,49 @@ const crypto = require('crypto');
 const { pipeline } = require('stream/promises');
 
 // Can accept either a string or array in `targetname`
-async function findCompiler(dir, targetname) {
-    let entries;
-    try {
-        entries = await fsp.readdir(dir, { withFileTypes: true });
-        logger.debug(`Searching directory: ${dir}`);
-    } catch (err) {
-        if (err.code === 'ENOENT') {
-            // Skip if directory doesn't exist
-            logger.debug(`Skipping missing directory: ${dir}`);
-            return null;
-        } else {
-            // Unexpected error — surface it
-            throw err;
-        }
-    }
+async function findCompiler(baseDir, isWindows) {
+    const subfolder = isWindows ? 'win32' : 'linux';
+    const targetname = isWindows ? 'alc.exe' : 'alc';
+    const expectedRoot = path.join(baseDir, 'extension', 'bin', subfolder);
 
-    for (const entry of entries) {
-        const fullPath = path.join(dir, entry.name);
-
-        if (entry.isDirectory()) {
-            const result = await findCompiler(fullPath, targetname);
-            if (result) return result;
-        } else {
-            const name = entry.name.toLowerCase();
-            const matches = Array.isArray(targetname) ? targetname.some(t => name.includes(t.toLowerCase())) : name.includes(targetname.toLowerCase());
-            if (matches) {
-                return fullPath;
+    async function walk(dir) {
+        let entries;
+        try {
+            entries = await fsp.readdir(dir, { withFileTypes: true });
+            logger.debug(`Searching directory: ${dir}`);
+        } catch (err) {
+            if (err.code === 'ENOENT') {
+                // Skip if directory doesn't exist
+                logger.debug(`Skipping missing directory: ${dir}`);
+                return null;
+            } else {
+                throw err;
             }
         }
+
+        for (const entry of entries) {
+            const fullPath = path.join(dir, entry.name);
+
+            if (entry.isDirectory()) {
+                const result = await walk(fullPath);
+                if (result) return result;
+            } else {
+                const name = entry.name.toLowerCase();
+                const matches = Array.isArray(targetname)
+                    ? targetname.some(t => name === t.toLowerCase())  // ✅ correct
+                    : name === targetname.toLowerCase();
+                if (matches) {
+                    return fullPath;
+                }
+            }
+        }
+
+        return null;
     }
-    return null;
+
+    const result = await walk(expectedRoot);
+    if (!result) throw new Error(`Could not find compiler ${targetname} in '${expectedRoot}'`);
+    return result;
 }
 
 
@@ -105,7 +117,6 @@ async function findCompiler(dir, targetname) {
     logger.debug(`JSON body: ${JSON.stringify(jsonRawPrototype)}`);
 
     let versionResult;
-    
     try {
         const versionResponse = await fetch(apiUrl, {
             method: 'POST',
@@ -166,7 +177,7 @@ async function findCompiler(dir, targetname) {
     try {
         const downloadResponse = await fetch(downloadUrl);
 
-        if (!downloadResponse.ok) { 
+        if (!downloadResponse.ok) {
             logger.error(`Something went wrong downloading the compiler; got response code ${downloadResponse.status}: ${downloadResponse.statusText}`);
             process.exit(1);
         }
@@ -211,14 +222,14 @@ async function findCompiler(dir, targetname) {
     const extractTo = path.join(downloadDirectory, 'expanded');
 
     logger.info(`Extracting ${downloadFilename} to ${extractTo}`);
-    await fs.createReadStream(downloadFilename).pipe(unzipper.Extract( {path: extractTo })).promise();
+    await fs.createReadStream(downloadFilename).pipe(unzipper.Extract({ path: extractTo })).promise();
     logger.info(`Extracted ${downloadFilename} to ${extractTo}`);
 
     // find alc / alc.exe and echo results
-    
+
     const expectedCompilerName = isWindows ? 'alc.exe' : 'alc';
     logger.debug(`Searching for compiler ${expectedCompilerName}`);
-    let actualALEXE = await findCompiler(extractTo, expectedCompilerName);
+    let actualALEXE = await findCompiler(extractTo, isWindows);
 
     if (actualALEXE) {
         logger.info(`Found compiler '${expectedCompilerName}' at '${actualALEXE}`);
