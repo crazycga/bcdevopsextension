@@ -88,8 +88,11 @@ const inputFilenameAndPath = process.env.INPUT_FILENAMEANDPATH;
     }
 
     try {
+        const psCommand = `$v = $PSVersionTable.PSVersion; Write-Output "$($v.Major).$($v.Minor).$($v.Build).$($v.Revision)"`;
+        const quotedCommand = `'${psCommand.replace(/'/g, `'\\''`)}'`;
+
         pwshVersion = execSync(
-            `pwsh -NoProfile -Command "$v = $PSVersionTable.PSVersion; Write-Output ($v.Major.ToString() + '.' + $v.Minor + '.' + $v.Patch)"`,
+            `pwsh -NoProfile -Command ${quotedCommand}`,
             { encoding: 'utf8' }
         ).trim();
         logger.info('[pwsh version]:'.padEnd(logColWidth) + `${pwshVersion}`);
