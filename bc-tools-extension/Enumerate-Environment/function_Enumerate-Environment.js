@@ -93,9 +93,9 @@ const inputFilenameAndPath = process.env.INPUT_FILENAMEANDPATH;
             'Write-Output ((\' \' + $v.Major + \'.\' + $v.Minor + \'.\' + $v.Patch).TrimStart())'
         ].join(' ');
         const quotedCommand = `'${psCommand.replace(/'/g, `'\\''`)}'`;
-
+        logger.debug(`psCommand: ${quotedCommand}`);
         pwshVersion = execSync(
-            `pwsh -NoProfile -Command "${psCommand}"`,
+            `pwsh -NoProfile -Command "${quotedCommand}"`,
             { encoding: 'utf8' }
         ).trim();
         logger.info('[pwsh version]:'.padEnd(logColWidth) + `${pwshVersion}`);
