@@ -161,12 +161,16 @@ const inputFilenameAndPath = process.env.INPUT_FILENAMEANDPATH;
             const lines = psResult.trim().split('\n');
             DockerPsObject = lines.map(line => JSON.parse(line));
             
-            logger.info('[dockerimage]:'.padEnd(logColWidth) + '**Name**'.padEnd(logColWidth) + '**Status**');
-            DockerPsObject.forEach((image, idx) => {
-                if (image && image.name != "") {
-                    logger.info('[dockerimage]:'.padEnd(logColWidth) + `${image.Names}`.padEnd(logColWidth) + `${image.Status}`);
-                }
-            });
+            if (DockerPsObject.length > 0) {
+                logger.info('[dockerimage]:'.padEnd(logColWidth) + '**Name**'.padEnd(logColWidth) + '**Status**');
+                DockerPsObject.forEach((image, idx) => {
+                    if (image && image.name != "") {
+                        logger.info('[dockerimage]:'.padEnd(logColWidth) + `${image.Names}`.padEnd(logColWidth) + `${image.Status}`);
+                    }
+                });
+            } else {
+                logger.info('[dockerimage]:'.padEnd(logColWidth) + '[no images]');
+            }
         } catch (err) {
             const msg = err.message || '';
             const stderr = err.stderr?.toString() || '';
