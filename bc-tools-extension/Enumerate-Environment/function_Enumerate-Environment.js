@@ -74,7 +74,7 @@ const inputFilenameAndPath = process.env.INPUT_FILENAMEANDPATH;
     if (os.platform() === "win32") {
         try {
             psVersion = execSync(
-                `powershell -NoProfile -Command "$v = $PSVersionTable.PSVersion; Write-Output ($v.Major.ToString() + '.' + $v.Minor + '.' + $v.Build + '.' + $v.Revision)"`,
+                `powershell -NoProfile -Command "$v = $PSVersionTable.PSVersion; Write-Output ('' + $v.Major + '.' + $v.Minor + '.' + $v.Build + '.' + $v.Revision)"`,
                 { encoding: 'utf8' }
             ).trim();
             logger.info('[powershell version]:'.padEnd(logColWidth) + `${psVersion}`);
