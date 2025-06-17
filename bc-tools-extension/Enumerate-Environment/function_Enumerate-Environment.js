@@ -71,15 +71,20 @@ const inputFilenameAndPath = process.env.INPUT_FILENAMEANDPATH;
     // 4. Powershell version(s)
     let psVersion;
     let pwshVersion;
-    try {
-        psVersion = execSync(
-            `powershell -NoProfile -Command "$v = $PSVersionTable.PSVersion; Write-Output ($v.Major.ToString() + '.' + $v.Minor + '.' + $v.Build + '.' + $v.Revision)"`,
-            { encoding: 'utf8' }
-        ).trim();
+    if (os.platform() === "win32") {
+        try {
+            psVersion = execSync(
+                `powershell -NoProfile -Command "$v = $PSVersionTable.PSVersion; Write-Output ($v.Major.ToString() + '.' + $v.Minor + '.' + $v.Build + '.' + $v.Revision)"`,
+                { encoding: 'utf8' }
+            ).trim();
+            logger.info('[powershell version]:'.padEnd(logColWidth) + `${psVersion}`);
+        } catch (err) {
+            logger.error(`[powershell version]: Encountered an error while executing a 'powerhsell version'`);
+            logger.error(`[powershell version]: Error: ${err}`);
+        }
+    } else {
+        psVersion = "[not installed; Linux environment]";
         logger.info('[powershell version]:'.padEnd(logColWidth) + `${psVersion}`);
-    } catch (err) {
-        logger.error(`[powershell version]: Encountered an error while executing a 'powerhsell version'`);
-        logger.error(`[powershell version]: Error: ${err}`);
     }
 
     try {
@@ -96,20 +101,26 @@ const inputFilenameAndPath = process.env.INPUT_FILENAMEANDPATH;
     // 5. BCContainerHelper existence / version
     let result;
     let BCContainerHelperPresent = false;
-    try {
-        const psCommand = `$modulePath = Get-Module -ListAvailable BCContainerHelper | Select-Object -First 1 -ExpandProperty Path; if ($modulePath) { $psd1 = $modulePath -replace '\\[^\\\\]+$', '.psd1'; if (Test-Path $psd1) { $lines = Get-Content $psd1 -Raw; if ($lines -match 'ModuleVersion\\s*=\\s*[\\"\\'']?([0-9\\.]+)[\\"\\'']?') { Write-Output $matches[1]; } else { Write-Output '[version not found]'; } } else { Write-Output '[not installed]'; } } else { Write-Output '[not installed]'; }`;
 
-        result = execSync(`powershell.exe -NoProfile -Command "${psCommand.replace(/\n/g, ' ').replace(/"/g, '\\"')}"`, { encoding: 'utf8', stdio: ['pipe', 'pipe', 'pipe'] }).trim();
-        if (result === "") { result = '[not installed]'}
-        if (result && result != "") {
-            logger.info('[BCContainerHelper version]:'.padEnd(logColWidth) + `${result}`);
+    if (os.platform() === "win32") {
+        try {
+            const psCommand = `$modulePath = Get-Module -ListAvailable BCContainerHelper | Select-Object -First 1 -ExpandProperty Path; if ($modulePath) { $psd1 = $modulePath -replace '\\[^\\\\]+$', '.psd1'; if (Test-Path $psd1) { $lines = Get-Content $psd1 -Raw; if ($lines -match 'ModuleVersion\\s*=\\s*[\\"\\'']?([0-9\\.]+)[\\"\\'']?') { Write-Output $matches[1]; } else { Write-Output '[version not found]'; } } else { Write-Output '[not installed]'; } } else { Write-Output '[not installed]'; }`;
+
+            result = execSync(`powershell.exe -NoProfile -Command "${psCommand.replace(/\n/g, ' ').replace(/"/g, '\\"')}"`, { encoding: 'utf8', stdio: ['pipe', 'pipe', 'pipe'] }).trim();
+            if (result === "") { result = '[not installed]'}
+            if (result && result != "") {
+                logger.info('[BCContainerHelper version]:'.padEnd(logColWidth) + `${result}`);
+                BCContainerHelperPresent = true;
+            }
             BCContainerHelperPresent = true;
-        }
-        BCContainerHelperPresent = true;
-    } catch (err) {
-        logger.error(`[BCContainerHelper]: Failed to query module: ${err.message}`);
-        logger.info(err);
-    }    
+        } catch (err) {
+            logger.error(`[BCContainerHelper]: Failed to query module: ${err.message}`);
+            logger.info(err);
+        }    
+    } else {
+        result = "[not installed; Linux environment]";
+        logger.info('[BCContainerHelper version]:'.padEnd(logColWidth) + `${result}`);
+    }
 
     // 6. Docker existence / version
     let DockerPresent = false;
@@ -170,6 +181,13 @@ const inputFilenameAndPath = process.env.INPUT_FILENAMEANDPATH;
     // Deal with the file if requested (note it has already been parsed at the top of this routine)
     if (produceFile) {
 
+        let dockerList = [];
+        try {
+            dockerList = DockerPsObject.filter(img => img && img.Names).map(img => ({ name: img.Names, status: img.Status }));
+        } catch {
+            dockerList = [];
+        }
+
         let candidateFile = {
             platform: os.platform(),
             whoami: textOut,
@@ -178,7 +196,7 @@ const inputFilenameAndPath = process.env.INPUT_FILENAMEANDPATH;
             pscoreVersion: pwshVersion,
             bcContainerVersion: result,
             dockerVersion: DockerVersionResult,
-            dockerImages: DockerPsObject.filter(img => img && img.Names).map(img => ({ name: img.Names, status: img.Status }))
+            dockerImages: dockerList
         }
 
         let candidateFileString = JSON.stringify(candidateFile);
