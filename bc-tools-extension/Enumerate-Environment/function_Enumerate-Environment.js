@@ -6,7 +6,7 @@ const { PassThrough } = require('stream');
 const { logger, parseBool, getToken, normalizePath } = require(path.join(__dirname, '_common', 'CommonTools.js'));
 
 let produceFile = parseBool(process.env.INPUT_PRODUCEFILE);
-const inputFilenameAndPath = process.env.INPUT_FILENAMEANDPATH;
+const inputFilenameAndPath = process.env.INPUT_FILPATHANDNAME;
 
 // this routine is intended to provide information about the agent on which it is running
 //
@@ -34,7 +34,7 @@ const inputFilenameAndPath = process.env.INPUT_FILENAMEANDPATH;
                 logger.info(`Setting ProduceFile to ${produceFile}`);
             }
         } else {
-            logger.warn(`Requested a file output, but no file name and path was supplied in 'FilenameAndPath'`);
+            logger.warn(`Requested a file output, but no file name and path was supplied in 'FilePathAndName'`);
             produceFile = false;
             logger.info(`Setting ProduceFile to ${produceFile}`);
         }
@@ -42,6 +42,7 @@ const inputFilenameAndPath = process.env.INPUT_FILENAMEANDPATH;
 
     logger.info('Invoking EGEnumerateEnvironment with the following parameters:');
     logger.info('ProduceFile:'.padStart(2).padEnd(30) + `${produceFile}`);
+    logger.info('FilePathAndName:'.padStart(2).padEnd(30) + `${outputFilenameAndPath}`);
     logger.info('');
     
     // 0. setup
