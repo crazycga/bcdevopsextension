@@ -164,7 +164,7 @@ const inputFilenameAndPath = process.env.INPUT_FILENAMEANDPATH;
         try {
             const psResult = execSync('docker ps -a --no-trunc --format "{{json .}}"', { encoding: 'utf8', stdio: ['pipe', 'pipe', 'pipe'] });
             const lines = psResult.trim().split('\n');
-            DockerPsObject = lines.map(line => JSON.parse(line));
+            DockerPsObject = lines.filter(line => line && line.trim().startsWith('{') && line.trim().endsWith('}')).map(line => JSON.parse(line));
             
             if (DockerPsObject.length > 0) {
                 logger.info('[dockerimage]:'.padEnd(logColWidth) + '**Name**'.padEnd(logColWidth) + '**Status**');
