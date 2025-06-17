@@ -90,7 +90,7 @@ const inputFilenameAndPath = process.env.INPUT_FILENAMEANDPATH;
     try {
         const psCommand = [
             '$v = $PSVersionTable.PSVersion;',
-            'Write-Output ($v.Major.ToString() + \'.\' + $v.Minor + \'.\' + $v.Patch)'
+            'Write-Output (\'\' + $v.Major.ToString() + \'.\' + $v.Minor + \'.\' + $v.Patch)'
         ].join(' ');
         const quotedCommand = `'${psCommand.replace(/'/g, `'\\''`)}'`;
 
