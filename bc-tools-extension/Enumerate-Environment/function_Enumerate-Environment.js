@@ -88,12 +88,15 @@ const inputFilenameAndPath = process.env.INPUT_FILENAMEANDPATH;
     }
 
     try {
-        const psCommand = `"$PSVersionTable.PsVersion.ToString()"`;
+        const isLinux = process.platform === 'linux';
+
+        const psCommandRaw = '$PSVersionTable.PSVersion.ToString()';
+        const psCommand = isLinux
+            ? psCommandRaw.replace(/(["\\$`])/g, '\\$1')  // escape for bash
+            : psCommandRaw;  // don't escape on Windows
+        const fullCommand = `pwsh -NoProfile -Command "${psCommand}"`;
         //const quotedCommand = `"${psCommand.replace(/"/g, '\\"')}"`;
-        pwshVersion = execSync(
-            `pwsh -NoProfile -Command ${psCommand}`,
-            { encoding: 'utf8' }
-        ).trim();
+        pwshVersion = execSync(fullCommand, { encoding: 'utf8' }).trim();
         logger.info('[pwsh version]:'.padEnd(logColWidth) + `${pwshVersion}`);
     } catch (err) {
         logger.error(`[pwsh version]: Encountered an error while executing a 'pwsh version'`);
