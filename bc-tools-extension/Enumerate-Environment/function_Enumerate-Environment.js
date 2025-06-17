@@ -6,7 +6,7 @@ const { PassThrough } = require('stream');
 const { logger, parseBool, getToken, normalizePath } = require(path.join(__dirname, '_common', 'CommonTools.js'));
 
 let produceFile = parseBool(process.env.INPUT_PRODUCEFILE);
-const inputFilenameAndPath = process.env.INPUT_FILPATHANDNAME;
+const inputFilenameAndPath = process.env.INPUT_FILEPATHANDNAME;
 
 // this routine is intended to provide information about the agent on which it is running
 //
