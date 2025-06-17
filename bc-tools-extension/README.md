@@ -32,7 +32,11 @@ This Azure DevOps extension provides build pipeline tasks for Microsoft Dynamics
 
 [![main-build](https://github.com/crazycga/bcdevopsextension/actions/workflows/mainbuild.yml/badge.svg?branch=main)](https://github.com/crazycga/bcdevopsextension/actions/workflows/mainbuild.yml)
 
-[![dev-trunk](https://github.com/crazycga/bcdevopsextension/actions/workflows/mainbuild.yml/badge.svg?branch=dev_trunk)](https://github.com/crazycga/bcdevopsextension/actions/workflows/mainbuild.yml)
+[![dev-trunk](https://img.shields.io/github/actions/workflow/status/crazycga/bcdevopsextension/mainbuild.yml?branch=dev_trunk&label=development)](https://github.com/crazycga/bcdevopsextension/actions/workflows/mainbuild.yml)
+
+![GitHub Release](https://img.shields.io/github/v/release/crazycga/bcdevopsextension)
+
+![Visual Studio Marketplace Installs - Azure DevOps Extension](https://img.shields.io/visual-studio-marketplace/azure-devops/installs/total/Evergrowth.eg-bc-build-tasks)
 
 ## Features
 
