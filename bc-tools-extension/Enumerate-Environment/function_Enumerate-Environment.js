@@ -90,12 +90,11 @@ const inputFilenameAndPath = process.env.INPUT_FILENAMEANDPATH;
     try {
         const psCommand = [
             '$v = $PSVersionTable.PSVersion;',
-            'Write-Output ((\' \' + $v.Major + \'.\' + $v.Minor + \'.\' + $v.Patch).TrimStart())'
+            'Write-Output (\'\' + $v.Major + \'.\' + $v.Minor + \'.\' + $v.Patch).Trim()'
         ].join(' ');
-        const quotedCommand = `'${psCommand.replace(/'/g, `'\\''`)}'`;
-        logger.debug(`psCommand: ${quotedCommand}`);
+        const quotedCommand = `"${psCommand.replace(/"/g, '\\"')}"`;
         pwshVersion = execSync(
-            `pwsh -NoProfile -Command "${quotedCommand}"`,
+            `pwsh -NoProfile -Command ${quotedCommand}`,
             { encoding: 'utf8' }
         ).trim();
         logger.info('[pwsh version]:'.padEnd(logColWidth) + `${pwshVersion}`);
