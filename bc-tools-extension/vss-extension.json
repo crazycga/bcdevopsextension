@@ -2,7 +2,7 @@
 	"manifestVersion": 1,
 	"id": "eg-bc-build-tasks",
 	"name": "Business Central Build Tasks",
-	"version": "0.1.5",
+	"version": "0.1.10",
 	"publisher": "Evergrowth",
 	"targets": [
 		{
@@ -85,6 +85,9 @@
 		},
 		{
 			"path": "_common"
+		},
+		{
+			"path": "Enumerate-Environment"
 		}
 	],
 	"contributions": [
@@ -147,6 +150,16 @@
 			"properties": {
 				"name": "Publish-BCModuleToTenant"
 			}
-		}		
+		},
+		{
+			"id": "Enumerate-Environment",
+			"type": "ms.vss-distributed-task.task",
+			"targets": [
+				"ms.vss-distributed-task.tasks"
+			],
+			"properties": {
+				"name": "Enumerate-Environment"
+			}
+		}				
 	]
 }

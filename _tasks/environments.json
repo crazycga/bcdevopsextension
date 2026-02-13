@@ -2,7 +2,7 @@
 	"version": {
 		"major": 0,
 		"minor": 1,
-		"patch": 9,
+		"patch": 10,
 		"build": 0
 	},
 	"dev": {
@@ -38,6 +38,10 @@
 			"EGDeployBCModule": {
 				"location": "bc-tools-extension/Publish-BCModuleToTenant/task.json",
 				"taskGuid": "def7c0a0-0d00-4f62-ae3f-7f084561e721"
+			},			
+			"EGEnumerateEnvironment": {
+				"location": "bc-tools-extension/Enumerate-Environment/task.json",
+				"taskGuid": "16821c4a-f2e7-4148-a686-2ec76cab618c"
 			}
 		}
 	},
@@ -74,6 +78,10 @@
 			"EGDeployBCModule": {
 				"location": "bc-tools-extension/Publish-BCModuleToTenant/task.json",
 				"taskGuid": "7315a985-6da9-4b4a-bae9-56b04fc492fd"
+			},			
+			"EGEnumerateEnvironment": {
+				"location": "bc-tools-extension/Enumerate-Environment/task.json",
+				"taskGuid": "206d9815-c3dd-459f-b3c1-41e8b18dddab"
 			}			
 		}
 	}
