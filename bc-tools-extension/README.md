@@ -2,23 +2,27 @@
 <!-- npx markdown-toc <filename.md> -->
 # Business Central Build Tasks for Azure DevOps
 
-  * [Overview](#overview)
-  * [Features](#features)
-  * [Installation](#installation)
-  * [Other Requirements](#other-requirements)
-    + [Azure AD App Registration](#azure-ad-app-registration)
-    + [Business Central Configuration](#business-central-configuration)
-    + [Setup Complete](#setup-complete)
-  * [Tasks Included](#tasks-included)
-    + [1. Get AL Compiler (`EGGetALCompiler`)](#1-get-al-compiler-eggetalcompiler)
-    + [2. Get AL Dependencies (`EGGetALDependencies`)](#2-get-al-dependencies-eggetaldependencies)
-    + [3. Build AL Package (`EGALBuildPackage`)](#3-build-al-package-egalbuildpackage)
-    + [4. Get List of Companies (`EGGetBCCompanies`)](#4-get-list-of-companies-eggetbccompanies)
-    + [5. Get List of Extensions (`EGGetBCModules`)](#5-get-list-of-extensions-eggetbcmodules)
-    + [6. Publish Extension to Business Central (`EGDeployBCModule`)](#6-publish-extension-to-business-central-egdeploybcmodule)
-  * [Example Pipeline](#example-pipeline)
-  * [Security & Trust](#security--trust)
-  * [Support](#support)
+- [Business Central Build Tasks for Azure DevOps](#business-central-build-tasks-for-azure-devops)
+  - [Overview](#overview)
+  - [Features](#features)
+  - [Installation](#installation)
+  - [Other Requirements](#other-requirements)
+    - [Azure AD App Registration](#azure-ad-app-registration)
+    - [Business Central Configuration](#business-central-configuration)
+    - [Setup Complete](#setup-complete)
+  - [Tasks Included](#tasks-included)
+    - [1. Get AL Compiler (`EGGetALCompiler`)](#1-get-al-compiler-eggetalcompiler)
+    - [2. Get AL Dependencies (`EGGetALDependencies`)](#2-get-al-dependencies-eggetaldependencies)
+    - [3. Build AL Package (`EGALBuildPackage`)](#3-build-al-package-egalbuildpackage)
+    - [4. Get List of Companies (`EGGetBCCompanies`)](#4-get-list-of-companies-eggetbccompanies)
+    - [5. Get List of Extensions (`EGGetBCModules`)](#5-get-list-of-extensions-eggetbcmodules)
+    - [6. Publish Extension to Business Central (`EGDeployBCModule`)](#6-publish-extension-to-business-central-egdeploybcmodule)
+    - [7. Enumerate Environment (`EnumerateEnvironment`)](#7-enumerate-environment-enumerateenvironment)
+  - [Example Pipeline](#example-pipeline)
+  - [Common Failures](#common-failures)
+  - [Security \& Trust](#security--trust)
+  - [Support](#support)
+  - [License](#license)
 
 ## Overview
 
@@ -32,7 +36,11 @@ This Azure DevOps extension provides build pipeline tasks for Microsoft Dynamics
 
 [![main-build](https://github.com/crazycga/bcdevopsextension/actions/workflows/mainbuild.yml/badge.svg?branch=main)](https://github.com/crazycga/bcdevopsextension/actions/workflows/mainbuild.yml)
 
-[![dev-trunk](https://github.com/crazycga/bcdevopsextension/actions/workflows/mainbuild.yml/badge.svg?branch=dev_trunk)](https://github.com/crazycga/bcdevopsextension/actions/workflows/mainbuild.yml)
+[![dev-trunk](https://img.shields.io/github/actions/workflow/status/crazycga/bcdevopsextension/mainbuild.yml?branch=dev_trunk&label=development)](https://github.com/crazycga/bcdevopsextension/actions/workflows/mainbuild.yml)
+
+![GitHub Release](https://img.shields.io/github/v/release/crazycga/bcdevopsextension)
+
+![Visual Studio Marketplace Installs - Azure DevOps Extension](https://img.shields.io/visual-studio-marketplace/azure-devops/installs/total/Evergrowth.eg-bc-build-tasks)
 
 ## Features
 
@@ -239,6 +247,42 @@ There is not much more control that is provided and even the response codes from
 |Input|`PollingFrequency`||`10`|The number of **seconds** to wait between attempts to poll the extension deployment status for information after the upload|
 |Input|`MaxPollingTimeout`||`600`|The maximum number of **seconds** to stop the pipeline to wait for the result of the deployment status; **note: use this value to prevent the pipeline from consuming too much time waiting for a response**|
 
+### 7. Enumerate Environment (`EnumerateEnvironment`)
+
+This function returns information about the agent on which the pipeline is running for diagnostic and troubleshooting purposes.  Included is:
+* platform (windows or linux)
+* whoami (user security context)
+* current working directory
+* Powershell version (if installed)
+* pwsh version (if installed)
+* BCContainerHelper version (if installed)
+* docker version (if installed)
+* list of docker images (if installed, and if any exist)
+
+The output can be put to a file for consumption by later steps in the pipeline.  The output file is a JSON file, with the following format:
+
+```json
+{
+  "platform": "string",
+  "whoami": "string",
+  "workingDirectory": "string",
+  "powershellVersion": "string",
+  "pscoreVersion": "string",
+  "bcContainerVersion": "string",
+  "dockerVersion": "string",
+  "dockerImages": [
+    {
+      "name": "string",
+      "status": "string"
+    }
+  ]
+}
+```
+
+|Type|Name|Required|Default|Use|
+|---|---|---|---|---|
+|Input|FileNameAndPath||`<blank>`|Directs where to save the file if `GenerateFile` is `true` |
+
 ## Example Pipeline
 
 ```yaml
@@ -301,15 +345,20 @@ There is not much more control that is provided and even the response codes from
     ClientSecret: "<target-capable client secret>"
     CompanyId: "<company id>"
 
+- task: EGEnumerateEnvironment@0
+  displayName: "Enumerate environment"
+  inputs:
+    FileNameAndPath: ./environment.json
+    
 ```
 
 ## Common Failures
 
 Here are some common failures and their likely causes:
 
-|Failure|Cause|
-|---|---|
-|**Immediate fail on deploy** | An immediate failure often means the extension’s **version number hasn’t changed**. Business Central may retain internal metadata **even if** the extension was unpublished and removed. This can cause silent rejections during re-deploy. To confirm, try a manual upload — the web interface will usually surface an error message that the API silently swallows. |
+|Failure|Cause|Corrective Action|
+|---|---|---|
+|**Immediate fail on deploy** | An immediate failure often means the extension’s **version number hasn’t changed**. Business Central may retain internal metadata **even if** the extension was unpublished and removed. This can cause silent rejections during re-deploy. To confirm, try a manual upload — the web interface will usually surface an error message that the API silently swallows. | Increment build number in ```app.json```. |
 | **Extension never installs / stuck in “InProgress”** | Business Central backend is overloaded or stalled (e.g., schema sync issues, queued deployments). | Increase `PollingTimeout` and check the BC admin center for other queued extensions or backend delays. |
 | **Extension fails with no visible error message** | The BC API may suppress detailed errors. Often due to invalid dependencies, permission errors, or duplicate version conflicts. | Try uploading the extension manually through the BC UI to surface hidden error messages. |
 | **Authentication fails** | Incorrect or expired `ClientSecret`; or app registration missing permissions. | Ensure app has Application permissions, `API.ReadWrite.All`, and admin consent granted. Rotate secret if expired. |
@@ -318,6 +367,7 @@ Here are some common failures and their likely causes:
 | **Pipeline fails to find `app.json`** | Folder structure doesn't match expected default; `PathToAppJson` may be incorrect. | Confirm folder layout. Use an inline `ls` or echo step to validate paths before running. |
 | **Polling hangs until timeout** | Deployment didn’t register; call to `Microsoft.NAV.upload` may have silently failed. | Recheck that upload succeeded and bookmark is valid. Consider increasing logging verbosity. |
 | **ENOENT / ETAG errors during upload** | Missing `.app` file or stale `@odata.etag` from a previous upload attempt. | Confirm `Build Package` step ran and `.app` file exists. If needed, reacquire a fresh bookmark with valid ETAG. |
+| **500 Internal Server Error** or **```"An error occurred while trying to download ''"```** during package download | The pipeline user may not have an entry in the Entra users in Business Central. | Add the pipeline user to the Entra users. |
 
 ## Security & Trust
 
