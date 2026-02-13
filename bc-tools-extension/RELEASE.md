@@ -40,6 +40,9 @@
 # Version: 0.1.9
 - Addresses [#31](https://github.com/crazycga/bcdevopsextension/issues/31): ```EGGetALCompiler``` returning incorrect value.  This update addresses this particular bug, having refactored the search / walk algorithm to find the compiler.
 
+# Version: 0.1.9
+- Addresses [#31](https://github.com/crazycga/bcdevopsextension/issues/31): ```EGGetALCompiler``` returning incorrect value.  This update addresses this particular bug, having refactored the search / walk algorithm to find the compiler.
+
 # Version: 0.1.8
 
 - Addresses [#16](https://github.com/crazycga/bcdevopsextension/issues/16): Platform agnosticism; moving towards it.  This update moves almost all Powershell code to use JavaScript, which is closer to native functionality and doesn't require the (soon to be deprecated, maybe?) VstsTaskSdk for Powershell.
