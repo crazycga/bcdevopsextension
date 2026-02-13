@@ -5,7 +5,6 @@ const fs = require('fs');
 const { PassThrough } = require('stream');
 const { logger, parseBool, getToken, normalizePath } = require(path.join(__dirname, '_common', 'CommonTools.js'));
 
-let produceFile = parseBool(process.env.INPUT_PRODUCEFILE);
 const inputFilenameAndPath = process.env.INPUT_FILEPATHANDNAME;
 
 // this routine is intended to provide information about the agent on which it is running
@@ -20,41 +19,31 @@ const inputFilenameAndPath = process.env.INPUT_FILEPATHANDNAME;
 
 (async () => {
     let outputFilenameAndPath;
-    if (produceFile) {
-        if (inputFilenameAndPath && inputFilenameAndPath != '') {
-            outputFilenameAndPath = normalizePath(inputFilenameAndPath);
-            let pathInfo = path.parse(outputFilenameAndPath);
 
-            let outputPath = pathInfo.dir;
-            let outputName = pathInfo.base;
+    if (inputFilenameAndPath && inputFilenameAndPath.trim() !== '') {
+        outputFilenameAndPath = normalizePath(inputFilenameAndPath);
+        const pathInfo = path.parse(outputFilenameAndPath);
 
-            if (!outputName || !outputPath) {
-                logger.warn(`Requested a file output, but cannot parse the file name and path '${outputFilenameAndPath}'`);
-                produceFile = false;
-                logger.info(`Setting ProduceFile to ${produceFile}`);
-            }
-        } else {
-            logger.warn(`Requested a file output, but no file name and path was supplied in 'FilePathAndName'`);
-            produceFile = false;
-            logger.info(`Setting ProduceFile to ${produceFile}`);
+        if (!pathInfo.base || !pathInfo.dir) {
+            logger.warn(`Invalid file path supplied: '${outputFilenameAndPath}'. Skipping file production.`);
+            outputFilenameAndPath = undefined;
         }
     }
 
     logger.info('Invoking EGEnumerateEnvironment with the following parameters:');
-    logger.info('ProduceFile:'.padStart(2).padEnd(30) + `${produceFile}`);
     logger.info('FilePathAndName:'.padStart(2).padEnd(30) + `${outputFilenameAndPath}`);
     logger.info('');
-    
+
     // 0. setup
     const logColWidth = 30;
 
     // 1. platform    
     logger.info('[platform]:'.padEnd(logColWidth) + `${os.platform()}`);
-    
+
     // 2. whoami
-    let textOut;    
+    let textOut;
     try {
-        let whoami = execSync('whoami', { encoding: 'utf8'});
+        let whoami = execSync('whoami', { encoding: 'utf8' });
         textOut = whoami.toString().trim();
         if (textOut.length > 0) {
             logger.info('[whoami]: '.padEnd(logColWidth) + `${textOut}`);
@@ -113,7 +102,7 @@ const inputFilenameAndPath = process.env.INPUT_FILEPATHANDNAME;
             const psCommand = `$modulePath = Get-Module -ListAvailable BCContainerHelper | Select-Object -First 1 -ExpandProperty Path; if ($modulePath) { $psd1 = $modulePath -replace '\\[^\\\\]+$', '.psd1'; if (Test-Path $psd1) { $lines = Get-Content $psd1 -Raw; if ($lines -match 'ModuleVersion\\s*=\\s*[\\"\\'']?([0-9\\.]+)[\\"\\'']?') { Write-Output $matches[1]; } else { Write-Output '[version not found]'; } } else { Write-Output '[not installed]'; } } else { Write-Output '[not installed]'; }`;
 
             result = execSync(`powershell.exe -NoProfile -Command "${psCommand.replace(/\n/g, ' ').replace(/"/g, '\\"')}"`, { encoding: 'utf8', stdio: ['pipe', 'pipe', 'pipe'] }).trim();
-            if (result === "") { result = '[not installed]'}
+            if (result === "") { result = '[not installed]' }
             if (result && result != "") {
                 logger.info('[BCContainerHelper version]:'.padEnd(logColWidth) + `${result}`);
                 BCContainerHelperPresent = true;
@@ -122,7 +111,7 @@ const inputFilenameAndPath = process.env.INPUT_FILEPATHANDNAME;
         } catch (err) {
             logger.error(`[BCContainerHelper]: Failed to query module: ${err.message}`);
             logger.info(err);
-        }    
+        }
     } else {
         result = "[not installed; Linux environment]";
         logger.info('[BCContainerHelper version]:'.padEnd(logColWidth) + `${result}`);
@@ -133,7 +122,7 @@ const inputFilenameAndPath = process.env.INPUT_FILEPATHANDNAME;
     let DockerVersionResult;
     try {
         DockerResult = execSync('docker version --format "{{.Client.Version}}"', { stdio: ['pipe', 'pipe', 'pipe'] });
-        if (DockerResult === "") { DockerVersionResult = '[not installed]'}
+        if (DockerResult === "") { DockerVersionResult = '[not installed]' }
         else { DockerVersionResult = DockerResult.toString().trim(); }
         if (DockerVersionResult && DockerVersionResult != "") {
             logger.info('[dockerversion]:'.padEnd(logColWidth) + `${DockerVersionResult}`);
@@ -166,7 +155,7 @@ const inputFilenameAndPath = process.env.INPUT_FILEPATHANDNAME;
             const psResult = execSync('docker ps -a --no-trunc --format "{{json .}}"', { encoding: 'utf8', stdio: ['pipe', 'pipe', 'pipe'] });
             const lines = psResult.trim().split('\n');
             DockerPsObject = lines.filter(line => line && line.trim().startsWith('{') && line.trim().endsWith('}')).map(line => JSON.parse(line));
-            
+
             if (DockerPsObject.length > 0) {
                 logger.info('[dockerimage]:'.padEnd(logColWidth) + '**Name**'.padEnd(logColWidth) + '**Status**');
                 DockerPsObject.forEach((image, idx) => {
@@ -181,7 +170,7 @@ const inputFilenameAndPath = process.env.INPUT_FILEPATHANDNAME;
             const msg = err.message || '';
             const stderr = err.stderr?.toString() || '';
 
-            const combined = `${msg}\n${stderr}`;            
+            const combined = `${msg}\n${stderr}`;
             logger.error(`[dockerimage]: Unexpected error: ${combined}`);
         }
     } else {
@@ -189,7 +178,7 @@ const inputFilenameAndPath = process.env.INPUT_FILEPATHANDNAME;
     }
 
     // Deal with the file if requested (note it has already been parsed at the top of this routine)
-    if (produceFile) {
+    if (outputFilenameAndPath) {
 
         let dockerList = [];
         try {
@@ -211,7 +200,7 @@ const inputFilenameAndPath = process.env.INPUT_FILEPATHANDNAME;
 
         let candidateFileString = JSON.stringify(candidateFile);
         fs.writeFileSync(outputFilenameAndPath, candidateFileString);
-    
+
         logger.info('');
         logger.info(`Produced file at: ${outputFilenameAndPath}`);
     }

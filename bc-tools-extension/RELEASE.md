@@ -35,6 +35,7 @@
 
 # Version: 0.1.10
 - Adds [#36](https://github.com/crazycga/bcdevopsextension/issues/36): incorporate failure condition regarding missing pipeline user entry onto Microsoft Entra Application screen in Business Central.
+- Adds new function ```EGEnumerateEnvironment``` for fast troubleshooting of pipeline environments.
 
 # Version: 0.1.9
 - Addresses [#31](https://github.com/crazycga/bcdevopsextension/issues/31): ```EGGetALCompiler``` returning incorrect value.  This update addresses this particular bug, having refactored the search / walk algorithm to find the compiler.

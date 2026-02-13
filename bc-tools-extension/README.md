@@ -17,6 +17,7 @@
     - [4. Get List of Companies (`EGGetBCCompanies`)](#4-get-list-of-companies-eggetbccompanies)
     - [5. Get List of Extensions (`EGGetBCModules`)](#5-get-list-of-extensions-eggetbcmodules)
     - [6. Publish Extension to Business Central (`EGDeployBCModule`)](#6-publish-extension-to-business-central-egdeploybcmodule)
+    - [7. Enumerate Environment (`EnumerateEnvironment`)](#7-enumerate-environment-enumerateenvironment)
   - [Example Pipeline](#example-pipeline)
   - [Common Failures](#common-failures)
   - [Security \& Trust](#security--trust)
@@ -246,6 +247,42 @@ There is not much more control that is provided and even the response codes from
 |Input|`PollingFrequency`||`10`|The number of **seconds** to wait between attempts to poll the extension deployment status for information after the upload|
 |Input|`MaxPollingTimeout`||`600`|The maximum number of **seconds** to stop the pipeline to wait for the result of the deployment status; **note: use this value to prevent the pipeline from consuming too much time waiting for a response**|
 
+### 7. Enumerate Environment (`EnumerateEnvironment`)
+
+This function returns information about the agent on which the pipeline is running for diagnostic and troubleshooting purposes.  Included is:
+* platform (windows or linux)
+* whoami (user security context)
+* current working directory
+* Powershell version (if installed)
+* pwsh version (if installed)
+* BCContainerHelper version (if installed)
+* docker version (if installed)
+* list of docker images (if installed, and if any exist)
+
+The output can be put to a file for consumption by later steps in the pipeline.  The output file is a JSON file, with the following format:
+
+```json
+{
+  "platform": "string",
+  "whoami": "string",
+  "workingDirectory": "string",
+  "powershellVersion": "string",
+  "pscoreVersion": "string",
+  "bcContainerVersion": "string",
+  "dockerVersion": "string",
+  "dockerImages": [
+    {
+      "name": "string",
+      "status": "string"
+    }
+  ]
+}
+```
+
+|Type|Name|Required|Default|Use|
+|---|---|---|---|---|
+|Input|FileNameAndPath||`<blank>`|Directs where to save the file if `GenerateFile` is `true` |
+
 ## Example Pipeline
 
 ```yaml
@@ -308,6 +345,11 @@ There is not much more control that is provided and even the response codes from
     ClientSecret: "<target-capable client secret>"
     CompanyId: "<company id>"
 
+- task: EGEnumerateEnvironment@0
+  displayName: "Enumerate environment"
+  inputs:
+    FileNameAndPath: ./environment.json
+    
 ```
 
 ## Common Failures
