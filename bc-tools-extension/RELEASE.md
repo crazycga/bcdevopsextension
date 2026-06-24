@@ -1,8 +1,11 @@
 # Release Notes - BCBuildTasks Extension
 
 - [Release Notes - BCBuildTasks Extension](#release-notes---bcbuildtasks-extension)
+- [Version: 0.1.12](#version-0112)
+- [Version: 0.1.11](#version-0111)
 - [Version: 0.1.10](#version-0110)
 - [Version: 0.1.9](#version-019)
+- [Version: 0.1.9](#version-019-1)
 - [Version: 0.1.8](#version-018)
 - [Version: 0.1.7](#version-017)
   - [Fixes](#fixes)
@@ -32,6 +35,13 @@
   - [Known Limitations](#known-limitations)
   - [Support](#support)
   - [License](#license)
+
+# Version: 0.1.12
+- Added Node24 support
+- Fixed ```undici``` error regarding "```TypeError: webidl.util.markAsUncloneable is not a function```"
+
+# Version: 0.1.11
+- Unused
 
 # Version: 0.1.10
 - Adds [#36](https://github.com/crazycga/bcdevopsextension/issues/36): incorporate failure condition regarding missing pipeline user entry onto Microsoft Entra Application screen in Business Central.
