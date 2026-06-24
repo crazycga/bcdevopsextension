@@ -26,6 +26,10 @@
 
 ## Overview
 
+**2026-06-24 Version 0.1.12: Node24 support now added**
+
+We've updated to allow for Node 24 support!
+
 **2025-06-10 Version 0.1.8: NO LONGER WINDOWS ONLY!**
 
 *Proud to announce that this extension is NO LONGER Windows agent dependent!!!*
