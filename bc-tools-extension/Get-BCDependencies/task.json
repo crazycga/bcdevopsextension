@@ -84,6 +84,9 @@
     },
     "Node20_1": {
       "target": "function_Get-BCDependencies.js"
+    },
+    "Node24": {
+      "target": "function_Get-BCDependencies.js"
     }
   }
 }

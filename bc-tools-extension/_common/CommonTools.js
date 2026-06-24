@@ -45,24 +45,20 @@ let fetch = null;
 
 function usesUndici() {
     if (!fetch) {
-        try {
-            fetch = require('undici').fetch;
-        } catch (_) {
-            logger.warn("'undici' not found. Attempting to install...");
-            const projectRoot = path.resolve(__dirname, '..');
+        logger.warn("'undici' not found. Attempting to install deterministic version...");
+        const projectRoot = path.resolve(__dirname, '..');
 
-            const { execSync } = require('child_process');
-            try {
-                execSync('npm install undici@7.10.0 --no-progress --loglevel=warn', {
-                    cwd: projectRoot,
-                    stdio: 'inherit'
-                });
-                fetch = require('undici').fetch;
-            } catch (installErr) {
-                console.error("Auto-install of 'undici' failed. Aborting.");
-                console.error(installErr);
-                process.exit(1);
-            }
+        const { execSync } = require('child_process');
+        try {
+            execSync('npm install undici@6.22.0 --no-progress --loglevel=warn', {
+                cwd: projectRoot,
+                stdio: 'inherit'
+            });
+            fetch = require('undici').fetch;
+        } catch (installErr) {
+            console.error("Auto-install of 'undici' failed. Aborting.");
+            console.error(installErr);
+            process.exit(1);
         }
     }
     return fetch;
@@ -217,7 +213,7 @@ async function getModules(token, tenantId, environmentName, companyId, moduleId,
             'Accept': 'application/json'
         }
     });
-    
+
     if (!response.ok) {
         logger.error(`Failed to get modules: ${response.status}`);
         const error = await response.text();
@@ -238,8 +234,8 @@ async function confirmModule(token, tenantId, environmentName, companyId, module
     let checkValue = await getModules(token, tenantId, environmentName, companyId, moduleId);
 
     checkValue.forEach((module, idx) => {
-            logger.debug(`**** ${idx + 1}. ${module.displayName} (ID: ${module.id})`);
-        });
+        logger.debug(`**** ${idx + 1}. ${module.displayName} (ID: ${module.id})`);
+    });
 
     return checkValue.some(m => m.id === moduleId);
 }
@@ -282,9 +278,9 @@ async function getInstallationStatus(token, tenantId, environmentName, companyId
 
     //console.debug('API response (getInstallationStatus)');
     const data = await response.json();
-    
+
     //console.debug(data);
-    return data.value;    
+    return data.value;
 }
 
 /**
@@ -337,7 +333,7 @@ async function createInstallationBookmark(token, tenantId, environmentName, comp
     }
 
     if (!['Current version', 'Next minor version', 'Next major version'].includes(schedule) && schedule?.trim() !== "") {
-        throw new Error ('\'schedule\' must be one of: \'Current version\', \'Next minor version\', or \'Next major version\', or left blank');
+        throw new Error('\'schedule\' must be one of: \'Current version\', \'Next minor version\', or \'Next major version\', or left blank');
     }
 
     // per: https://learn.microsoft.com/en-us/dynamics365/business-central/dev-itpro/administration/resources/dynamics_extensionupload
@@ -346,14 +342,14 @@ async function createInstallationBookmark(token, tenantId, environmentName, comp
     }
 
     if (!['Add', 'Force Sync'].includes(syncMode) && syncMode?.trim() !== "") {
-        throw new Error ('\'syncMode\' must be one of: \'Add\', or \'Force Sync\', or left blank');
+        throw new Error('\'syncMode\' must be one of: \'Add\', or \'Force Sync\', or left blank');
     }
 
     const body = {
         schedule: schedule,
         schemaSyncMode: syncMode
     };
-    
+
     const _debugBody = await JSON.stringify(body);
     logger.debug('Request body:');
     logger.debug(_debugBody);
@@ -367,7 +363,7 @@ async function createInstallationBookmark(token, tenantId, environmentName, comp
         },
         body: JSON.stringify(body)
     });
-    
+
     if (!response.ok) {
         const status = response.status;
 
@@ -410,7 +406,7 @@ async function createInstallationBookmark(token, tenantId, environmentName, comp
     const data = await response.json();
     logger.debug('(createInstallationBookmark) returning: ');
     logger.debug(data);
-    return data;    
+    return data;
 }
 
 /**
@@ -492,7 +488,7 @@ async function callNavUploadCommand(token, tenantId, environmentName, companyId,
         let response = await fetch(apiUrl, {
             method: 'POST',
             headers: {
-                'Authorization': `Bearer ${token}`,  
+                'Authorization': `Bearer ${token}`,
                 'Accept': 'application/json',
                 'Accept-Encoding': 'gzip, deflate, br'
             }
@@ -507,14 +503,14 @@ async function callNavUploadCommand(token, tenantId, environmentName, companyId,
                 logger.info(`Original odata.etag: ${odata_etag}`);
                 if (Array.isArray(refreshCheck)) {
                     odata_etag = refreshCheck[0]['@odata.etag'];
-                } else { 
+                } else {
                     odata_etag = refreshCheck['@odata.etag'];
                 }
                 logger.info(`Refreshed odata.etag: ${odata_etag}`);
                 response = await fetch(apiUrl, {
                     method: 'POST',
                     headers: {
-                        'Authorization': `Bearer ${token}`,  
+                        'Authorization': `Bearer ${token}`,
                         'Accept': 'application/json',
                         'Accept-Encoding': 'gzip, deflate, br'
                     }
