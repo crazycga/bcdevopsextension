@@ -53,7 +53,7 @@ function usesUndici() {
 
             const { execSync } = require('child_process');
             try {
-                execSync('npm install undici --no-progress --loglevel=warn', {
+                execSync('npm install undici@7.10.0 --no-progress --loglevel=warn', {
                     cwd: projectRoot,
                     stdio: 'inherit'
                 });
