@@ -1,0 +1,68 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://crazycga.github.io/bcdevopsextension/schema/packing_slip-1.0.schema.json",
+  "title": "BC DevOps Packing Slip Schema",
+  "version": "1.0",
+  "type": "object",
+  "properties": {
+    "packingSlipVersion": { "type": "string" },
+    "application": { "$ref": "#/$defs/module" },
+    "testApplication": {
+      "allOf": [
+        { "$ref": "#/$defs/module" },
+        {
+          "type": "object",
+          "properties": {
+            "testTarget": {
+              "type": "string",
+              "enum": ["localagent", "publish"]
+            },
+            "dependsOn": {
+              "type": "array",
+              "items": { "type": "string" },
+              "minItems": 1
+            }
+          },
+          "required": ["testTarget", "dependsOn"]
+        }
+      ]
+    }
+  },
+  "required": ["packingSlipVersion", "application"],
+  "$defs": {
+    "module": {
+      "type": "object",
+      "properties": {
+        "version": {
+          "type": "string",
+          "pattern": "^\\d+\\.\\d+\\.\\d+\\.\\d+$"
+        },
+        "branch": { "type": "string" },
+        "buildId": { "type": "integer" },
+        "artifact": { "type": "string" },
+        "artifactType": {
+          "type": "string",
+          "enum": ["al-extension"]
+        },
+        "sha256": { "type": "string" },
+        "timestamp": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "includes": {
+          "type": "array",
+          "items": { "type": "string" }
+        }
+      },
+      "required": [
+        "version",
+        "branch",
+        "buildId",
+        "artifact",
+        "artifactType",
+        "timestamp",
+        "includes"
+      ]
+    }
+  }
+}

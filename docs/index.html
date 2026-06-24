@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>BC DevOps Manifest Schemas</title>
+  <style>
+    body { font-family: sans-serif; margin: 2em; }
+    h1 { color: #0078D4; }
+    code { background: #f4f4f4; padding: 0.2em 0.4em; border-radius: 3px; }
+    ul { margin-top: 1em; }
+  </style>
+</head>
+<body>
+  <h1>BC DevOps Manifest Schemas</h1>
+  <p>This page hosts JSON schemas used to validate pipeline manifests for Business Central AL builds.</p>
+
+  <h2>Available Schemas</h2>
+  <ul>
+    <li>
+      <a href="./schema/packing_slip-1.0.schema.json">packing_slip-1.0.schema.json</a>
+    </li>
+    <!-- Add future versions here -->
+  </ul>
+
+  <h2>How to Use</h2>
+  <p>Reference the schema from your manifest file like this:</p>
+  <pre><code>"$schema": "https://crazycga.github.io/bcdevopsextension/schema/manifest-1.0.schema.json"</code></pre>
+
+  <h2>Validation</h2>
+  <p>Use tools like <a href="https://www.jsonschemavalidator.net/">JSON Schema Validator</a> or <code>ajv</code> in Node.js to validate your manifests.</p>
+</body>
+</html>
