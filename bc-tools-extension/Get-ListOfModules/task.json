@@ -76,6 +76,9 @@
     },
     "Node20_1": {
       "target": "function_Get-ListOfModules.js"
+    },
+    "Node24": {
+      "target": "function_Get-ListOfModules.js"
     }
   }
 }
