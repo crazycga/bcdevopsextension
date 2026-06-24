@@ -9,7 +9,7 @@
   "version": {
     "Major": 0,
     "Minor": 1,
-    "Patch": 5
+    "Patch": 6
   },
   "instanceNameFormat": "Collect list of companies",
   "inputs": [
@@ -59,6 +59,9 @@
       "target": "function_Get-ListOfCompanies.js"
     },
     "Node20_1": {
+      "target": "function_Get-ListOfCompanies.js"
+    },
+    "Node24": {
       "target": "function_Get-ListOfCompanies.js"
     }
   }

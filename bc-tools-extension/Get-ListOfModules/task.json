@@ -9,7 +9,7 @@
   "version": {
     "Major": 0,
     "Minor": 1,
-    "Patch": 5
+    "Patch": 6
   },
   "instanceNameFormat": "Collect list of modules",
   "inputs": [
@@ -75,6 +75,9 @@
       "target": "function_Get-ListOfModules.js"
     },
     "Node20_1": {
+      "target": "function_Get-ListOfModules.js"
+    },
+    "Node24": {
       "target": "function_Get-ListOfModules.js"
     }
   }

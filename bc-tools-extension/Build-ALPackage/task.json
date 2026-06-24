@@ -9,7 +9,7 @@
   "version": {
     "Major": 0,
     "Minor": 1,
-    "Patch": 5
+    "Patch": 6
   },
   "instanceNameFormat": "Build AL Package from $(ProjectPath)",
   "inputs": [
@@ -59,6 +59,9 @@
       "target": "function_Build-ALPackage.js"
     },
     "Node20_1": {
+      "target": "function_Build-ALPackage.js"
+    },
+    "Node24": {
       "target": "function_Build-ALPackage.js"
     }
   }

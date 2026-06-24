@@ -9,7 +9,7 @@
   "version": {
     "Major": 0,
     "Minor": 1,
-    "Patch": 5
+    "Patch": 6
   },
   "instanceNameFormat": "Enumerate compiling environment",
   "inputs": [
@@ -35,6 +35,9 @@
       "target": "function_Enumerate-Environment.js"
     },
     "Node20_1": {
+      "target": "function_Enumerate-Environment.js"
+    },
+    "Node24": {
       "target": "function_Enumerate-Environment.js"
     }
   }
