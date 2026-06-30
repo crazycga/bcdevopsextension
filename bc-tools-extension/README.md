@@ -44,8 +44,6 @@ This Azure DevOps extension provides build pipeline tasks for Microsoft Dynamics
 
 ![GitHub Release](https://img.shields.io/github/v/release/crazycga/bcdevopsextension)
 
-![Visual Studio Marketplace Installs - Azure DevOps Extension](https://img.shields.io/visual-studio-marketplace/azure-devops/installs/total/Evergrowth.eg-bc-build-tasks)
-
 ## Features
 
 * **Platform Independent**
